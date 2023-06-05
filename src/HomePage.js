@@ -19,7 +19,7 @@ function HomeComponent() {
 
   const [year, setYear] = useState(String(today.getFullYear()));
   const [month, setMonth] = useState(String(today.getMonth() + (todayWeek == 4 ? 3 : 2)));
-  const [week, setWeek] = useState("0");
+  const [week, setWeek] = useState("1");
   const [date, setDate] = useState(new Date(parseInt(year), parseInt(month) - 1));
   const [dateList, setDateList] = useState([]);
   const [weekSelectorShow, setWeekSelectorShow] = useState(false);
@@ -55,14 +55,15 @@ function HomeComponent() {
     if (!(sportsData && dateList && dateList.length >= 7)) {
       Alert.alert('Please Retry Again.')
       setVoteModalShow(false);
+      setSportsData({});
       setVoting(false)
       return
     }
-    
+
     for (const date of dateList) {
       const data = sportsData[date]
       const sl = Object.values(data)
-      if (!['Basketball', 'Volleyball', 'Baseball'].every((v) => sl.includes(v))) {
+      if (!['Basketball', 'Volleyball', 'Badminton'].every((v) => sl.includes(v))) {
         Alert.alert('Duplicate sports cannot be voted on for a single day vote.')
         setVoting(false)
         return
@@ -97,6 +98,7 @@ function HomeComponent() {
       Alert.alert("Successfully Vote counted.");
       setVoting(false)
       setVoteModalShow(false);
+      setSportsData({});
       return
     }
     else if (apiResult.code == 1001) {
@@ -131,6 +133,7 @@ function HomeComponent() {
               if (apiResult.code == 1000) {
                 Alert.alert("Successfully Vote counted.");
                 setVoting(false)
+                setSportsData({});
                 setVoteModalShow(false);
                 return
               } else {
@@ -196,7 +199,11 @@ function HomeComponent() {
       <TouchableOpacity style={homePageStyles.select_sports_button} onPress={handleModalOpen}>
         <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', padding: '3%' }}>Select Sports</Text>
       </TouchableOpacity>
-      <HalfScreenModal visible={voteModalShow} year={year} month={month} week={week} dateList={dateList} setData={setSportsData} sportsData={sportsData} onSubmit={async () => { await handleSubmit() }} onClose={() => { setVoteModalShow(false) }} ></HalfScreenModal>
+      <HalfScreenModal visible={voteModalShow} year={year} month={month} week={week} dateList={dateList} setData={setSportsData} sportsData={sportsData} onSubmit={async () => { await handleSubmit() }} onClose={() => {
+        setSportsData({});
+        setVoteModalShow(false)
+      }} />
+
       <InfoModal visible={showInfoModal} onClose={() => { setShowInfoModal(false) }}></InfoModal>
     </ImageBackground>
   );
