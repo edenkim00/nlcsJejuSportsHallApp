@@ -58,6 +58,17 @@ function HomeComponent() {
       setVoting(false)
       return
     }
+    
+    for (const date of dateList) {
+      const data = sportsData[date]
+      const sl = Object.values(data)
+      if (!['Basketball', 'Volleyball', 'Baseball'].every((v) => sl.includes(v))) {
+        Alert.alert('Duplicate sports cannot be voted on for a single day vote.')
+        setVoting(false)
+        return
+      }
+    }
+
     if (!_isValidVoteData(sportsData, dateList)) {
       Alert.alert('Please fill in all the vote blanks.')
       setVoting(false)
@@ -108,7 +119,7 @@ function HomeComponent() {
         [
           {
             text: 'No',
-            onPress: () => { 
+            onPress: () => {
               setVoting(false)
               return
             },
