@@ -47,7 +47,7 @@ const AppNavigator = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'BottomTab',
+    initialRouteName: 'Login',
     headerMode: 'none',
   }
 );
