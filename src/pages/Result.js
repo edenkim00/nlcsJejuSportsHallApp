@@ -16,29 +16,7 @@ import {ACTION_DATE_SET} from 'react-native-month-year-picker';
 import moment from 'moment';
 
 import APIManager from '../api';
-const dayToString = {
-  0: 'Sun',
-  1: 'Mon',
-  2: 'Tue',
-  3: 'Wed',
-  4: 'Thu',
-  5: 'Fri',
-  6: 'Sat',
-};
-const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+import {months, dayToString} from '../lib/constants';
 
 function ResultComponent() {
   const today = new Date();

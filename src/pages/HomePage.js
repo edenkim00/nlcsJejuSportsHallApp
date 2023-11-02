@@ -16,30 +16,8 @@ import {ACTION_DATE_SET} from 'react-native-month-year-picker';
 import moment from 'moment';
 import Storage from '../Storage';
 import APIManager from '../api';
-
-const dayToString = {
-  0: 'Sun',
-  1: 'Mon',
-  2: 'Tue',
-  3: 'Wed',
-  4: 'Thu',
-  5: 'Fri',
-  6: 'Sat',
-};
-const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+import {getWeekDateList, isValidVoteData} from '../lib/utils';
+import {dayToString, months} from '../lib/constants';
 
 function HomeComponent() {
   const today = new Date();
@@ -613,24 +591,4 @@ function getDateRanges(year, month, week) {
     endDate: endDate.format('YYYY-MM-DD'),
     dateList: getWeekDateList(startDate, endDate),
   };
-}
-
-function getWeekDateList(startDate, endDate) {
-  const dateList = [];
-  let currentDate = startDate;
-  while (currentDate <= endDate) {
-    dateList.push(currentDate.format('YYYY-MM-DD'));
-    currentDate = currentDate.clone().add(1, 'd');
-  }
-  return dateList;
-}
-
-function isValidVoteData(voteData, dateRanges) {
-  for (const date of dateRanges) {
-    const data = voteData[date];
-    if (!(data && data['1'] && data['2'] && data['3'])) {
-      return false;
-    }
-  }
-  return true;
 }
