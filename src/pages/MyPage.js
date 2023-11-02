@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import APIManager from '../api';
 
-import {styles, myPageStyles, modalStyles} from './styles';
+import {styles, myPageStyles, modalStyles} from '../styles/styles';
 import {ScrollView} from 'react-native-gesture-handler';
-import Storage from './Storage';
+import Storage from '../Storage';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -112,7 +112,7 @@ function MypageComponent({navigation, route}) {
     </ImageBackground>
   ) : (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.bottomTabContainer}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={styles.title2}>VOTING SYSTEM</Text>
