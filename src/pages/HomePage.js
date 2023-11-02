@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
 import {useState} from 'react';
 import {
@@ -81,8 +83,8 @@ function HomeComponent() {
       return;
     }
 
-    for (const date of dateList) {
-      const data = sportsData[date];
+    for (const dt of dateList) {
+      const data = sportsData[dt];
       const sl = Object.values(data);
       if (
         !['Basketball', 'Volleyball', 'Badminton'].every(v => sl.includes(v))
@@ -152,8 +154,8 @@ function HomeComponent() {
           {
             text: 'Change Vote',
             onPress: async () => {
-              const apiResult = await APIManager.voteChange(body);
-              if (apiResult.code == 1000) {
+              const voteChangeApiResult = await APIManager.voteChange(body);
+              if (voteChangeApiResult.code == 1000) {
                 Alert.alert('Successfully Vote counted.');
                 setVoting(false);
                 setSportsData({});
@@ -241,14 +243,14 @@ function HomeComponent() {
         </View>
         {weekSelectorShow && (
           <MonthPicker
-            onChange={(event, date) => {
+            onChange={(event, monthPickDate) => {
               if (event == ACTION_DATE_SET) {
-                setDate(date);
-                setMonth(String(date.getMonth() + 1));
-                setYear(String(date.getFullYear()));
+                setDate(monthPickDate);
+                setMonth(String(monthPickDate.getMonth() + 1));
+                setYear(String(monthPickDate.getFullYear()));
                 setWeekList(
-                  date.getFullYear() == today.getFullYear() &&
-                    date.getMonth() + 1 == today.getMonth() + 2
+                  monthPickDate.getFullYear() == today.getFullYear() &&
+                    monthPickDate.getMonth() + 1 == today.getMonth() + 2
                     ? fullWeekList.slice(todayWeek)
                     : fullWeekList,
                 );
@@ -300,7 +302,8 @@ function HomeComponent() {
           visible={showInfoModal}
           onClose={() => {
             setShowInfoModal(false);
-          }}></InfoModal>
+          }}
+        />
       </ImageBackground>
     </>
   );
@@ -424,8 +427,9 @@ const HalfScreenModal = ({
                   <SportsVoteComponent
                     sportsData={sportsData}
                     dateString={d}
-                    setData={setData}></SportsVoteComponent>
-                  <View style={modalStyles.divider}></View>
+                    setData={setData}
+                  />
+                  <View style={modalStyles.divider} />
                 </View>
               );
             })}
@@ -468,7 +472,7 @@ const SportsPickerComponent = ({order, sportsData, setData, dateString}) => {
           });
         }}
         placeholder={{
-          label: `▽`,
+          label: '▽',
           value: '',
         }}
         items={[
@@ -536,7 +540,8 @@ const SportsVoteComponent = ({dateString, sportsData, setData}) => {
             dateString={dateString}
             order={'1'}
             sportsData={sportsData}
-            setData={setData}></SportsPickerComponent>
+            setData={setData}
+          />
         </View>
         <View
           style={{
@@ -549,7 +554,8 @@ const SportsVoteComponent = ({dateString, sportsData, setData}) => {
             dateString={dateString}
             order={'2'}
             sportsData={sportsData}
-            setData={setData}></SportsPickerComponent>
+            setData={setData}
+          />
         </View>
         <View
           style={{
@@ -562,7 +568,8 @@ const SportsVoteComponent = ({dateString, sportsData, setData}) => {
             dateString={dateString}
             order={'3'}
             sportsData={sportsData}
-            setData={setData}></SportsPickerComponent>
+            setData={setData}
+          />
         </View>
       </View>
     </View>

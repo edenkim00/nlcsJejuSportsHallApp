@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
-import {View, Text, Button} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import React from 'react';
+import {View, Text} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
 export default function HelloReactNativePage() {
@@ -119,7 +120,7 @@ function SelectorComponent({label}) {
       <RNPickerSelect
         onValueChange={() => {}}
         placeholder={{
-          label: `▽`,
+          label: '▽',
           value: '',
         }}
         items={[
