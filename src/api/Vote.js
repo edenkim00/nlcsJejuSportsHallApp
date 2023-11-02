@@ -1,8 +1,7 @@
-import { apiServerDomain } from './constants';
-import { getJWTToken } from './utils';
+import {apiServerDomain} from './constants';
+import {getJWTToken} from './utils';
 
 export async function vote(voteBody) {
-  console.log(voteBody)
   const apiUrl = apiServerDomain + '/app/vote';
 
   const jwtToken = await getJWTToken();
@@ -10,8 +9,8 @@ export async function vote(voteBody) {
     return null;
   }
   const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("x-access-token", jwtToken);
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('x-access-token', jwtToken);
 
   const body = JSON.stringify(voteBody);
 
@@ -20,8 +19,8 @@ export async function vote(voteBody) {
     headers: myHeaders,
     body: body,
   };
-  const response = await fetch(apiUrl, requestOptions)
-  return await response.json()
+  const response = await fetch(apiUrl, requestOptions);
+  return await response.json();
 }
 
 export async function voteChange(voteBody) {
@@ -31,8 +30,8 @@ export async function voteChange(voteBody) {
     return null;
   }
   const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("x-access-token", jwtToken);
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('x-access-token', jwtToken);
 
   const body = JSON.stringify(voteBody);
 
@@ -41,6 +40,6 @@ export async function voteChange(voteBody) {
     headers: myHeaders,
     body: body,
   };
-  const response = await fetch(apiUrl, requestOptions)
-  return await response.json()
+  const response = await fetch(apiUrl, requestOptions);
+  return await response.json();
 }

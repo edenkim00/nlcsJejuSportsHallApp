@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
 });
 
 const loginPageStyles = StyleSheet.create({
@@ -95,7 +94,6 @@ const loginPageStyles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
   },
-
 });
 
 const signUpPageStyles = StyleSheet.create({
@@ -156,7 +154,6 @@ const signUpPageStyles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
   },
-
 });
 
 const forgotPasswordPageStyles = StyleSheet.create({
@@ -206,7 +203,6 @@ const forgotPasswordPageStyles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
   },
-
 });
 
 const homePageStyles = StyleSheet.create({
@@ -237,7 +233,7 @@ const homePageStyles = StyleSheet.create({
     fontSize: 20,
     width: '40%',
     marginHorizontal: '3%',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   year_and_month: {
     width: '80%',
@@ -259,7 +255,7 @@ const homePageStyles = StyleSheet.create({
     marginHorizontal: '3%',
     marginTop: '2%',
     marginBottom: '5%',
-  }
+  },
 });
 
 const resultPageStyles = StyleSheet.create({
@@ -278,7 +274,7 @@ const resultPageStyles = StyleSheet.create({
     fontSize: 20,
     width: '40%',
     marginHorizontal: '3%',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   year_and_month: {
     width: '80%',
@@ -300,7 +296,7 @@ const resultPageStyles = StyleSheet.create({
     marginHorizontal: '3%',
     marginTop: '2%',
     marginBottom: '5%',
-  }
+  },
 });
 
 const myPageStyles = StyleSheet.create({
@@ -341,7 +337,7 @@ const myPageStyles = StyleSheet.create({
     borderColor: '#FFF000',
     width: '60%',
     paddingVertical: '1%',
-    borderWidth: 2,    
+    borderWidth: 2,
     borderRadius: 10,
   },
 
@@ -354,7 +350,6 @@ const myPageStyles = StyleSheet.create({
     fontSize: 15,
     width: '100%',
   },
-
 });
 
 const modalStyles = StyleSheet.create({
@@ -424,4 +419,4 @@ module.exports = {
   homePageStyles,
   resultPageStyles,
   myPageStyles,
-}
+};

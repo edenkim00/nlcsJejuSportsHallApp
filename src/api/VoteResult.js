@@ -1,5 +1,5 @@
-import { apiServerDomain } from './constants';
-import { getJWTToken } from './utils';
+import {apiServerDomain} from './constants';
+import {getJWTToken} from './utils';
 
 export async function voteResult(grade, year, month, week) {
   const apiUrl = `${apiServerDomain}/app/vote-result?grade=${grade}&year=${year}&month=${month}&week=${week}`;
@@ -8,13 +8,13 @@ export async function voteResult(grade, year, month, week) {
     return null;
   }
   const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("x-access-token", jwtToken);
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('x-access-token', jwtToken);
 
   const requestOptions = {
     method: 'GET',
     headers: myHeaders,
   };
-  const response = await fetch(apiUrl, requestOptions)
-  return await response.json()
+  const response = await fetch(apiUrl, requestOptions);
+  return await response.json();
 }
