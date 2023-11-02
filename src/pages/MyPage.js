@@ -12,7 +12,6 @@ import {
   TextInput,
 } from 'react-native';
 import APIManager from '../api';
-
 import {styles, myPageStyles, modalStyles} from '../styles/styles';
 import {ScrollView} from 'react-native-gesture-handler';
 import Storage from '../Storage';
@@ -99,7 +98,7 @@ function MypageComponent({navigation, route}) {
         setIsAdmin(true);
       }
     });
-  }, []);
+  }, [navigation]);
 
   return loading ? (
     <ImageBackground

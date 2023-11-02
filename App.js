@@ -7,6 +7,8 @@ import SignUpPage2 from './src/pages/SignUpPage2';
 import PasswordPage1 from './src/pages/PasswordPage1';
 import PasswordPage2 from './src/pages/PasswordPage2';
 
+import HelloReactNativePage from './src/pages/HelloReactNative';
+
 const AppNavigator = createStackNavigator(
   {
     Login: {
@@ -45,9 +47,15 @@ const AppNavigator = createStackNavigator(
         title: 'Vote Application',
       },
     },
+    HelloReactNative: {
+      screen: HelloReactNativePage,
+      navigationOptions: {
+        title: 'Hello React Native',
+      },
+    },
   },
   {
-    initialRouteName: 'Login',
+    initialRouteName: 'HelloReactNative',
     headerMode: 'none',
   },
 );
