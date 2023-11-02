@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {useState} from 'react';
 import {
   Alert,
   View,
@@ -7,11 +8,15 @@ import {
   Button,
   ImageBackground,
 } from 'react-native';
-import {styles, forgotPasswordPageStyles} from './styles';
-import {changePassword} from './api/ChangePassword';
+import {styles, forgotPasswordPageStyles} from '../styles/styles';
+import APIManager from '../api';
 
 function PasswordComponent({navigation}) {
   const {email} = navigation.state.params || {};
+  if (!email) {
+    Alert.alert('Please retry reset password process from the beginning.');
+    navigation.navigate('Login');
+  }
   const [password, setPassword] = useState('');
   const [passwordVerification, setPasswordVerification] = useState('');
 
@@ -22,7 +27,7 @@ function PasswordComponent({navigation}) {
       return;
     }
     // api 요청
-    const apiResult = await changePassword(email, password);
+    const apiResult = await APIManager.changePassword(email, password);
     if (apiResult.code == 1000) {
       Alert.alert('Successfully Change Password!');
       navigation.navigate('Login');
@@ -35,16 +40,9 @@ function PasswordComponent({navigation}) {
     }
   };
 
-  React.useEffect(() => {
-    if (!email) {
-      Alert.alert('Please retry reset password process from the beginning.');
-      navigation.navigate('Login');
-    }
-  }, []);
-
   return (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.container}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={forgotPasswordPageStyles.label}>New Password</Text>

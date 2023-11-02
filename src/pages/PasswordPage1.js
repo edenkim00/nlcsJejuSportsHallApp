@@ -7,8 +7,9 @@ import {
   Button,
   ImageBackground,
 } from 'react-native';
-import {styles, forgotPasswordPageStyles} from './styles';
-import {getEmailValidation} from './api/EmailValidation';
+import {styles, forgotPasswordPageStyles} from '../styles/styles';
+import APIManager from '../api';
+
 function PasswordComponent({navigation}) {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState(null);
@@ -21,7 +22,7 @@ function PasswordComponent({navigation}) {
       Alert.alert('This is not a school email.');
       return;
     }
-    const result = await getEmailValidation(email);
+    const result = await APIManager.requestEmailValidation(email);
     const code = result.result.code;
     setCode(code);
     Alert.alert('Please check your email inbox.');
@@ -51,7 +52,7 @@ function PasswordComponent({navigation}) {
   };
   return (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.container}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={styles.title2}>VOTING SYSTEM</Text>

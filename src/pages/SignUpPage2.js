@@ -7,10 +7,10 @@ import {
   Button,
   ImageBackground,
 } from 'react-native';
-import {styles, signUpPageStyles} from './styles';
-import {signup} from './api/Signup';
-import {getEmailValidation} from './api/EmailValidation';
+import {styles, signUpPageStyles} from '../styles/styles';
+
 import RNPickerSelect from 'react-native-picker-select';
+import APIManager from '../api';
 
 function SignUpComponent2({navigation}) {
   const {name, graduationYear} = navigation.state.params || {};
@@ -36,7 +36,7 @@ function SignUpComponent2({navigation}) {
         Alert.alert('This is not a school email.');
         return;
       }
-      const result = await getEmailValidation(email);
+      const result = await APIManager.requestEmailValidation(email);
       const code = result.result.code;
       setCode(code);
       Alert.alert('Please check your email inbox.');
@@ -95,7 +95,7 @@ function SignUpComponent2({navigation}) {
         Alert.alert('Check the voting weight again');
         return;
       }
-      const apiResult = await signup(
+      const apiResult = await APIManager.signup(
         email,
         password,
         name,
@@ -112,7 +112,7 @@ function SignUpComponent2({navigation}) {
 
   return (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.container}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={signUpPageStyles.label}>Email</Text>

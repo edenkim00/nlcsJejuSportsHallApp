@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import {useState} from 'react';
 import {
   Alert,
@@ -6,16 +7,15 @@ import {
   View,
   Text,
   Modal,
-  Button,
   ScrollView,
 } from 'react-native';
-import {vote, voteChange} from './api/Vote';
-import {styles, modalStyles, homePageStyles} from './styles';
+import {styles, modalStyles, homePageStyles} from '../styles/styles';
 import RNPickerSelect from 'react-native-picker-select';
 import MonthPicker from 'react-native-month-year-picker';
 import {ACTION_DATE_SET} from 'react-native-month-year-picker';
 import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from '../Storage';
+import APIManager from '../api';
 
 const dayToString = {
   0: 'Sun',
@@ -43,8 +43,8 @@ const months = [
 
 function HomeComponent() {
   const today = new Date();
-  const todayDay = parseInt(today.getDate());
-  const todayWeek = Math.min(parseInt((todayDay - 1) / 7) + 1, 4);
+  const todayDay = parseInt(today.getDate(), 10);
+  const todayWeek = Math.min(parseInt((todayDay - 1) / 7, 10) + 1, 4);
   const fullWeekList = [
     {label: 'Week 1', value: 1},
     {label: 'Week 2', value: 2},
@@ -58,7 +58,7 @@ function HomeComponent() {
   );
   const [week, setWeek] = useState('1');
   const [date, setDate] = useState(
-    new Date(parseInt(year), parseInt(month) - 1),
+    new Date(parseInt(year, 10), parseInt(month, 10) - 1),
   );
   const [dateList, setDateList] = useState([]);
   const [weekSelectorShow, setWeekSelectorShow] = useState(false);
@@ -117,14 +117,14 @@ function HomeComponent() {
       }
     }
 
-    if (!_isValidVoteData(sportsData, dateList)) {
+    if (!isValidVoteData(sportsData, dateList)) {
       Alert.alert('Please fill in all the vote blanks.');
       setVoting(false);
       return;
     }
     const [votingWeight, graduationYear] = await Promise.all([
-      AsyncStorage.getItem('sportshall_votingWeight'),
-      AsyncStorage.getItem('sportshall_graduationYear'),
+      Storage.get('sportshall_votingWeight'),
+      Storage.get('sportshall_graduationYear'),
     ]);
     const body = {
       voteData: sportsData,
@@ -134,8 +134,7 @@ function HomeComponent() {
       week,
       graduationYear,
     };
-    const apiResult = await vote(body);
-    console.log(apiResult);
+    const apiResult = await APIManager.vote(body);
     if (!apiResult) {
       Alert.alert('Authorization failed. Please re-login.');
       setVoting(false);
@@ -175,7 +174,7 @@ function HomeComponent() {
           {
             text: 'Change Vote',
             onPress: async () => {
-              const apiResult = await voteChange(body);
+              const apiResult = await APIManager.voteChange(body);
               if (apiResult.code == 1000) {
                 Alert.alert('Successfully Vote counted.');
                 setVoting(false);
@@ -197,133 +196,135 @@ function HomeComponent() {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
-      style={styles.bottomTabContainer}>
-      <Text style={styles.title1}>Sports Hall</Text>
-      <Text style={styles.title2}>VOTING SYSTEM</Text>
-      <Text style={styles.title3}>@NLCS JEJU</Text>
-      <TouchableOpacity
-        style={homePageStyles.info_button}
-        onPress={handleInfoModalOpen}>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 15,
-            textAlign: 'center',
-            padding: '3%',
-          }}>
-          🗣️ Learning Voting Policies
-        </Text>
-      </TouchableOpacity>
-      <Text style={homePageStyles.label}>Year and Month</Text>
-      <TouchableOpacity
-        style={homePageStyles.year_and_month}
-        onPress={() => setWeekSelectorShow(true)}>
-        <View>
-          <Text style={{color: 'white', fontSize: 15, textAlign: 'center'}}>
-            {new Date(date.valueOf() + 9 * 60 * 60 * 1000)
-              .toISOString()
-              .substring(0, 7)}{' '}
-            ▽
+    <>
+      <ImageBackground
+        source={require('../../assets/backgrounds.jpg')}
+        style={styles.bottomTabContainer}>
+        <Text style={styles.title1}>Sports Hall</Text>
+        <Text style={styles.title2}>VOTING SYSTEM</Text>
+        <Text style={styles.title3}>@NLCS JEJU</Text>
+        <TouchableOpacity
+          style={homePageStyles.info_button}
+          onPress={handleInfoModalOpen}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 15,
+              textAlign: 'center',
+              padding: '3%',
+            }}>
+            🗣️ Learning Voting Policies
           </Text>
+        </TouchableOpacity>
+        <Text style={homePageStyles.label}>Year and Month</Text>
+        <TouchableOpacity
+          style={homePageStyles.year_and_month}
+          onPress={() => setWeekSelectorShow(true)}>
+          <View>
+            <Text style={{color: 'white', fontSize: 15, textAlign: 'center'}}>
+              {new Date(date.valueOf() + 9 * 60 * 60 * 1000)
+                .toISOString()
+                .substring(0, 7)}{' '}
+              ▽
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <Text style={homePageStyles.label}>Week</Text>
+        <View style={homePageStyles.week}>
+          <RNPickerSelect
+            title=""
+            onValueChange={value => setWeek(String(value))}
+            placeholder={{
+              label: 'Week ▽',
+              value: 0,
+            }}
+            items={weekList}
+            style={{
+              inputIOS: {
+                textAlign: 'center',
+                color: '#FFFFFF',
+                fontSize: 15,
+                padding: '3%',
+              },
+              inputAndroid: {
+                textAlign: 'center',
+                color: '#FFFFFF',
+                fontSize: 15,
+                padding: '3%',
+              },
+              placeholder: {
+                textAlign: 'center',
+                color: '#FFFFFF',
+                fontSize: 15,
+                padding: '3%',
+              },
+            }}
+          />
         </View>
-      </TouchableOpacity>
-      <Text style={homePageStyles.label}>Week</Text>
-      <View style={homePageStyles.week}>
-        <RNPickerSelect
-          title=""
-          onValueChange={value => setWeek(String(value))}
-          placeholder={{
-            label: 'Week ▽',
-            value: 0,
-          }}
-          items={weekList}
-          style={{
-            inputIOS: {
-              textAlign: 'center',
-              color: '#FFFFFF',
-              fontSize: 15,
-              padding: '3%',
-            },
-            inputAndroid: {
-              textAlign: 'center',
-              color: '#FFFFFF',
-              fontSize: 15,
-              padding: '3%',
-            },
-            placeholder: {
-              textAlign: 'center',
-              color: '#FFFFFF',
-              fontSize: 15,
-              padding: '3%',
-            },
-          }}
-        />
-      </View>
-      {weekSelectorShow && (
-        <MonthPicker
-          onChange={(event, date) => {
-            if (event == ACTION_DATE_SET) {
-              setDate(date);
-              setMonth(String(date.getMonth() + 1));
-              setYear(String(date.getFullYear()));
-              setWeekList(
-                date.getFullYear() == today.getFullYear() &&
-                  date.getMonth() + 1 == today.getMonth() + 2
-                  ? fullWeekList.slice(todayWeek)
-                  : fullWeekList,
-              );
+        {weekSelectorShow && (
+          <MonthPicker
+            onChange={(event, date) => {
+              if (event == ACTION_DATE_SET) {
+                setDate(date);
+                setMonth(String(date.getMonth() + 1));
+                setYear(String(date.getFullYear()));
+                setWeekList(
+                  date.getFullYear() == today.getFullYear() &&
+                    date.getMonth() + 1 == today.getMonth() + 2
+                    ? fullWeekList.slice(todayWeek)
+                    : fullWeekList,
+                );
+              }
+              setWeekSelectorShow(false);
+            }}
+            value={date}
+            minimumDate={
+              new Date(
+                new Date().getFullYear(),
+                new Date().getMonth() + (todayWeek == 4 ? 2 : 1),
+              )
             }
-            setWeekSelectorShow(false);
+            maximumDate={new Date(2028, 12)}
+            locale="ko"
+          />
+        )}
+        <TouchableOpacity
+          style={homePageStyles.select_sports_button}
+          onPress={handleModalOpen}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 18,
+              textAlign: 'center',
+              padding: '3%',
+            }}>
+            Select Sports
+          </Text>
+        </TouchableOpacity>
+        <HalfScreenModal
+          visible={voteModalShow}
+          year={year}
+          month={month}
+          week={week}
+          dateList={dateList}
+          setData={setSportsData}
+          sportsData={sportsData}
+          onSubmit={async () => {
+            await handleSubmit();
           }}
-          value={date}
-          minimumDate={
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth() + (todayWeek == 4 ? 2 : 1),
-            )
-          }
-          maximumDate={new Date(2028, 12)}
-          locale="ko"
+          onClose={() => {
+            setSportsData({});
+            setVoteModalShow(false);
+          }}
         />
-      )}
-      <TouchableOpacity
-        style={homePageStyles.select_sports_button}
-        onPress={handleModalOpen}>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 18,
-            textAlign: 'center',
-            padding: '3%',
-          }}>
-          Select Sports
-        </Text>
-      </TouchableOpacity>
-      <HalfScreenModal
-        visible={voteModalShow}
-        year={year}
-        month={month}
-        week={week}
-        dateList={dateList}
-        setData={setSportsData}
-        sportsData={sportsData}
-        onSubmit={async () => {
-          await handleSubmit();
-        }}
-        onClose={() => {
-          setSportsData({});
-          setVoteModalShow(false);
-        }}
-      />
 
-      <InfoModal
-        visible={showInfoModal}
-        onClose={() => {
-          setShowInfoModal(false);
-        }}></InfoModal>
-    </ImageBackground>
+        <InfoModal
+          visible={showInfoModal}
+          onClose={() => {
+            setShowInfoModal(false);
+          }}></InfoModal>
+      </ImageBackground>
+    </>
   );
 }
 
@@ -610,14 +611,13 @@ function getDateRanges(year, month, week) {
   return {
     startDate: startDate.format('YYYY-MM-DD'),
     endDate: endDate.format('YYYY-MM-DD'),
-    dateList: _getWeekDateList(startDate, endDate),
+    dateList: getWeekDateList(startDate, endDate),
   };
 }
 
-function _getWeekDateList(startDate, endDate) {
+function getWeekDateList(startDate, endDate) {
   const dateList = [];
   let currentDate = startDate;
-  console.log(startDate, endDate);
   while (currentDate <= endDate) {
     dateList.push(currentDate.format('YYYY-MM-DD'));
     currentDate = currentDate.clone().add(1, 'd');
@@ -625,7 +625,7 @@ function _getWeekDateList(startDate, endDate) {
   return dateList;
 }
 
-function _isValidVoteData(voteData, dateRanges) {
+function isValidVoteData(voteData, dateRanges) {
   for (const date of dateRanges) {
     const data = voteData[date];
     if (!(data && data['1'] && data['2'] && data['3'])) {

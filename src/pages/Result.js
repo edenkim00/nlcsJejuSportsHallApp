@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -8,13 +8,14 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
-import {voteResult} from './api/VoteResult';
-import {styles, resultPageStyles, modalStyles} from './styles';
+
+import {styles, resultPageStyles, modalStyles} from '../styles/styles';
 import RNPickerSelect from 'react-native-picker-select';
 import MonthPicker from 'react-native-month-year-picker';
 import {ACTION_DATE_SET} from 'react-native-month-year-picker';
 import moment from 'moment';
 
+import APIManager from '../api';
 const dayToString = {
   0: 'Sun',
   1: 'Mon',
@@ -77,7 +78,12 @@ function ResultComponent() {
       return;
     }
     setDateList(getDateRanges(year, month, week).dateList);
-    const apiResult = await voteResult(selectedGrade, year, month, week);
+    const apiResult = await APIManager.getVotingResult(
+      selectedGrade,
+      year,
+      month,
+      week,
+    );
     if (apiResult.code == 6002 || apiResult.code == 6001) {
       Alert.alert('The voting is still in progress.');
       return;
@@ -92,7 +98,7 @@ function ResultComponent() {
 
   return (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.bottomTabContainer}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={styles.title2}>VOTING SYSTEM</Text>
@@ -267,7 +273,7 @@ const ResultModal = ({
                 <View key={i}>
                   <DayResult
                     dateString={dateString}
-                    sports={resultData[dateString]?.sports ?? 'None'}
+                    sports={resultData[dateString]?.sports ?? '정보 없음'}
                   />
                   <View style={modalStyles.divider}></View>
                 </View>
@@ -352,7 +358,6 @@ function getDateRanges(year, month, week) {
 function _getWeekDateList(startDate, endDate) {
   const dateList = [];
   let currentDate = startDate;
-  console.log(startDate, endDate);
   while (currentDate <= endDate) {
     dateList.push(currentDate.format('YYYY-MM-DD'));
     currentDate = currentDate.clone().add(1, 'd');

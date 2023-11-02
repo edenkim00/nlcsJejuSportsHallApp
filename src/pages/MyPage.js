@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {
   LogBox,
@@ -11,10 +11,11 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-import {userInfo} from './api/UserInfo';
-import {sendEmailToAdminAPI} from './api/sendEmail';
+import APIManager from '../api';
+
 import {styles, myPageStyles, modalStyles} from './styles';
 import {ScrollView} from 'react-native-gesture-handler';
+import Storage from './Storage';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -34,14 +35,15 @@ function MypageComponent({navigation, route}) {
 
   const sendEmailToAdmin = async () => {
     try {
-      // TODO: validation
-      const apiResult = await sendEmailToAdminAPI(
+      const apiResult = await APIManager.reportVoteResult(
         adminEmail,
         adminYear,
         adminMonth,
       );
-      console.log(apiResult);
-      if (apiResult.code !== 1000) {
+      if (apiResult.code === 8001) {
+        Alert.alert('There is no data for the year and month.');
+        return;
+      } else if (apiResult.code !== 1000) {
         Alert.alert('Please try again later.');
         return;
       }
@@ -54,12 +56,12 @@ function MypageComponent({navigation, route}) {
   const handleLogout = async () => {
     rootNavigation.navigate('Login');
   };
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         let [userName, userGrade] = await Promise.all([
-          AsyncStorage.getItem('sportshall_userName'),
-          AsyncStorage.getItem('sportshall_userGrade'),
+          Storage.get('sportshall_userName'),
+          Storage.get('sportshall_userGrade'),
         ]);
         if (userName && userGrade) {
           setName(userName);
@@ -67,7 +69,7 @@ function MypageComponent({navigation, route}) {
           setLoading(false);
           return;
         }
-        const userInfoData = await userInfo();
+        const userInfoData = await APIManager.getUserInfo();
         if (!userInfoData) {
           Alert.alert('Auth Failed. Please re-login.');
           return;
@@ -80,8 +82,8 @@ function MypageComponent({navigation, route}) {
         userName = userInfoData.result.name;
         userGrade = userInfoData.result.grade;
         await Promise.all([
-          AsyncStorage.setItem('sportshall_userName', userName),
-          AsyncStorage.setItem('sportshall_userGrade', userGrade),
+          Storage.set('sportshall_userName', userName),
+          Storage.set('sportshall_userGrade', userGrade),
         ]);
         setName(userName);
         setGrade(userGrade);
@@ -92,17 +94,16 @@ function MypageComponent({navigation, route}) {
       }
     };
     fetchUserInfo();
-    const email = AsyncStorage.getItem('sportshall_email').then(email => {
+    Storage.get('sportshall_email').then(email => {
       if (email === 'admin@pupils.nlcsjeju.kr') {
         setIsAdmin(true);
       }
-      console.log('EMAIL', email);
     });
   }, []);
 
   return loading ? (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.bottomTabContainer}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={styles.title2}>VOTING SYSTEM</Text>
@@ -131,10 +132,10 @@ function MypageComponent({navigation, route}) {
           </Text>
         </TouchableOpacity>
       )}
-      <View style={{marginTop: '12.5%'}}></View>
+      <View style={{marginTop: '12.5%'}} />
       <Text style={myPageStyles.text}>Name: {name}</Text>
       <Text style={myPageStyles.text}>Grade: {grade}</Text>
-      <View style={{marginTop: '7.5%'}}></View>
+      <View style={{marginTop: '7.5%'}} />
       <View style={myPageStyles.logout_button}>
         <Button title="Logout" onPress={handleLogout} color="#FFFFFF" />
       </View>

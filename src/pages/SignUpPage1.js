@@ -7,7 +7,8 @@ import {
   ImageBackground,
   Alert,
 } from 'react-native';
-import {styles, signUpPageStyles} from './styles';
+import {styles, signUpPageStyles} from '../styles/styles';
+
 function SignUpComponent({navigation}) {
   const [name, setName] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
@@ -31,7 +32,7 @@ function SignUpComponent({navigation}) {
   };
   return (
     <ImageBackground
-      source={require('../assets/backgrounds.jpg')}
+      source={require('../../assets/backgrounds.jpg')}
       style={styles.container}>
       <Text style={styles.title1}>Sports Hall</Text>
       <Text style={styles.title2}>VOTING SYSTEM</Text>

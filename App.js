@@ -1,11 +1,11 @@
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
-import LoginPage from './src/LoginPage';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createAppContainer} from 'react-navigation';
+import LoginPage from './src/pages/LoginPage';
 import BottomTab from './src/Navigation';
-import SignUpPage1 from './src/SignUpPage1';
-import SignUpPage2 from './src/SignUpPage2';
-import PasswordPage1 from './src/PasswordPage1';
-import PasswordPage2 from './src/PasswordPage2';
+import SignUpPage1 from './src/pages/SignUpPage1';
+import SignUpPage2 from './src/pages/SignUpPage2';
+import PasswordPage1 from './src/pages/PasswordPage1';
+import PasswordPage2 from './src/pages/PasswordPage2';
 
 const AppNavigator = createStackNavigator(
   {
@@ -49,7 +49,7 @@ const AppNavigator = createStackNavigator(
   {
     initialRouteName: 'Login',
     headerMode: 'none',
-  }
+  },
 );
 
 const AppContainer = createAppContainer(AppNavigator);
