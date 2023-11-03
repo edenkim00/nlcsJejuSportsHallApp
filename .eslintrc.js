@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ['@react-native-community', 'plugin:tailwindcss/recommended'],
+  extends: '@react-native-community',
 };
