@@ -1,161 +1,68 @@
-/* eslint-disable react-native/no-inline-styles */
+import {Container} from '../components/Container';
+import {View} from 'react-native';
 import React from 'react';
-import {View, Text} from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-
-export default function HelloReactNativePage() {
+import {Input} from '../components/Input';
+import {Space} from '../components/Space';
+import {Button} from '../components/Button';
+import {useState} from 'react';
+export default function HelloReactNative() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
-    <>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: '40%',
-          marginBottom: '40%',
-          marginLeft: '10%',
-          marginRight: '10%',
-          borderRadius: 30,
-          backgroundColor: '#dddddd',
-        }}>
-        <OneDayVotingComponent label="Mon" />
-        <OneDayVotingComponent label="Tue" />
-        <OneDayVotingComponent label="Wed" />
-        <OneDayVotingComponent label="Thr" />
-        <OneDayVotingComponent label="Fri1" />
-        <OneDayVotingComponent label="Fri2" />
-        <OneDayVotingComponent label="Sat1" />
-        <OneDayVotingComponent label="Sat2" />
+    <Container>
+      <View className="absolute bottom-40 flex w-full items-center justify-center">
+        <EmailInput email={email} setEmail={setEmail} />
+        <Space size="h-4" />
+        <PasswordInput password={password} setPassword={setPassword} />
+        <Space size="h-6" />
+        <Button
+          label={'Login'}
+          onPress={() => {
+            //TODO: login
+          }}
+          extraClassName={
+            'border border-[#00AAAA] shadow-blue-900 shadow-lg mt-8 w-48 bg-transparent h-12 rounded-xl'
+          }
+          fontClassName={'font-normal text-lg font-semibold text-white'}
+        />
       </View>
-    </>
+    </Container>
   );
 }
 
-function DividerComponent() {
+function EmailInput({email, setEmail}) {
   return (
-    <View
-      style={{
-        width: '100%',
-        height: 1,
-        backgroundColor: 'black',
-        marginTop: '3%',
-        marginBottom: '3%',
-      }}
-    />
-  );
-}
-
-function OneDayVotingComponent({label}) {
-  return (
-    <>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-        }}>
-        <LabelComponent label={label} />
-        <VoteComponent />
-      </View>
-      <DividerComponent />
-    </>
-  );
-}
-
-function LabelComponent({label}) {
-  return (
-    <Text
-      style={{
-        fontSize: 18,
-        color: 'purple',
-        marginBottom: '3%',
-        marginLeft: '10%',
-        width: '35%',
-      }}>
-      {label}
-    </Text>
-  );
-}
-
-function VoteComponent() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '65%',
-        marginRight: '10%',
-      }}>
-      <SelectorComponent label={'1'} />
-
-      <SelectorComponent label={'2'} />
+    <View className="relative flex w-full flex-row items-end justify-between">
+      <Input
+        label="Email"
+        placeholder="Hello React Native"
+        value={email}
+        setValue={setEmail}
+        extraClassName="text-normal h-12"
+      />
+      <Button
+        label={'add domain'}
+        onPress={() => {
+          setEmail(email + '@pupils.nlcsjeju.kr');
+        }}
+        extraClassName={
+          'h-8 rounded-xl absolute border-yellow-200 right-4 -top-2 py-0 px-1 shadow-yellow-100'
+        }
+        fontClassName={'font-normal text-xs text-white'}
+      />
     </View>
   );
 }
 
-function SelectorComponent({label}) {
+function PasswordInput({password, setPassword}) {
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '40%',
-        marginRight: '10%',
-      }}>
-      <Text
-        style={{
-          textAlign: 'center',
-          fontSize: 18,
-          color: 'black',
-          marginBottom: '3%',
-        }}>
-        {label}
-      </Text>
-      <RNPickerSelect
-        onValueChange={() => {}}
-        placeholder={{
-          label: '▽',
-          value: '',
-        }}
-        items={[
-          {label: 'Basketball', value: 'Basketball'},
-          {label: 'Badminton', value: 'Badminton'},
-          {label: 'Volleyball', value: 'Volleyball'},
-        ]}
-        style={{
-          inputIOS: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-            borderWidth: 1,
-            borderColor: 'blue',
-          },
-          inputAndroid: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-          },
-          placeholder: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-          },
-        }}
+    <View className="flex flex-row items-end justify-between">
+      <Input
+        label="Password"
+        placeholder="Hello React Native"
+        value={password}
+        setValue={setPassword}
+        extraClassName="text-normal h-12"
       />
     </View>
   );
