@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect} from 'react';
+import React from 'react';
 import APIManager from '../api';
 
 import {Container} from '../components/Container';
@@ -16,45 +16,61 @@ let emailValidationCode = null;
 
 export default function SignUpPage({navigation}) {
   const [email, setEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordVerification, setNewPasswordVerification] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [sex, setSex] = useState('');
+  const [graduationYear, setGraduationYear] = useState('');
   const [validating, setValidating] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verified, setVerified] = useState(false);
 
   const _validation = () => {
-    if (!email || !newPassword || !newPasswordVerification) {
+    if (!email || !password) {
       Alert.alert('Please type email and password.');
       return false;
     }
-
-    if (newPassword.length < 4 || newPassword.length > 12) {
+    if (emailRegExp.test(email) === false) {
+      Alert.alert('Please type valid email.');
+      return false;
+    }
+    if (password.length < 4 || password.length > 12) {
       Alert.alert('Password should be 4-12 characters.');
       return false;
     }
-
-    if (newPassword !== newPasswordVerification) {
-      Alert.alert('Password and password verification should be same.');
+    if (!name) {
+      Alert.alert('Please type name.');
       return false;
     }
-
     if (!verified) {
       Alert.alert('Please verify email.');
       return false;
     }
-
+    if (!sex) {
+      Alert.alert('Please select sex.');
+      return false;
+    }
+    if (!graduationYear) {
+      Alert.alert('Please select graduation year.');
+      return false;
+    }
     return true;
   };
 
-  const handlePasswordChange = async () => {
+  const handleSignUp = async () => {
     if (!_validation()) {
       return;
     }
     try {
-      const result = await APIManager.changePassword(email, newPassword);
+      const result = await APIManager.signUp(
+        email,
+        password,
+        name,
+        sex,
+        graduationYear,
+      );
       mayAlert(result);
       if (result?.code === 1000) {
-        Alert.alert('Successfully changed password.');
+        Alert.alert('Successfully signed up!');
         navigation.navigate('Login');
       }
     } catch (err) {
@@ -69,13 +85,11 @@ export default function SignUpPage({navigation}) {
       return;
     }
     try {
-      const result = await APIManager.requestEmailValidation(email, true);
+      const result = await APIManager.requestEmailValidation(email);
       if (result?.code === 1000 && result?.result?.code) {
         emailValidationCode = result.result.code;
         Alert.alert('Please check your email inbox.');
         setValidating(true);
-      } else if (result?.code === 3002) {
-        mayAlert(result);
       } else {
         throw new Error('Failed to validate email.');
       }
@@ -100,7 +114,7 @@ export default function SignUpPage({navigation}) {
       <View className="absolute bottom-32 flex w-full items-center justify-center">
         <InputWithTailButton
           mainInputConfig={{
-            label: 'Your Email',
+            label: 'Email',
             value: email,
             setValue: setEmail,
             extraClassName: 'text-normsdl h-12',
@@ -139,22 +153,51 @@ export default function SignUpPage({navigation}) {
           <>
             <Space size="h-8" />
             <Input
-              label="New Password"
-              value={newPassword}
-              setValue={setNewPassword}
+              label="Password"
+              value={password}
+              setValue={setPassword}
               extraClassName="text-normal h-12"
             />
             <Space size="h-8" />
             <Input
-              label="New Password Verification"
-              value={newPasswordVerification}
-              setValue={setNewPasswordVerification}
+              label="Name"
+              value={name}
+              setValue={setName}
               extraClassName="text-normal h-12"
             />
+            <Space size="h-8" />
+            <View className="flex w-3/4 flex-row items-center justify-between">
+              <View className="flex w-1/2">
+                <Dropdown
+                  options={['male', 'female']}
+                  selectedOption={sex}
+                  setSelectedOption={setSex}
+                  label="Sex"
+                  style={{
+                    width: '95%',
+                    paddingVertical: '6%',
+                    marginRight: '5%',
+                  }}
+                />
+              </View>
+              <View className="flex w-1/2 items-center">
+                <Dropdown
+                  options={getGraduationYears()}
+                  selectedOption={graduationYear}
+                  setSelectedOption={setGraduationYear}
+                  label="Graduation Year"
+                  style={{
+                    width: '95%',
+                    paddingVertical: '6%',
+                    marginLeft: '5%',
+                  }}
+                />
+              </View>
+            </View>
             <Space size="h-10" />
             <Button
               label={'Sign Up'}
-              onPress={handlePasswordChange}
+              onPress={handleSignUp}
               extraClassName={
                 'border-2 border-[#AAFF] shadow-blue-900 shadow-lg w-48 bg-transparent h-12 rounded-xl'
               }

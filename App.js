@@ -1,40 +1,34 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
-// import LoginPage from './src/pages/LoginPage';
-// import BottomTab from './src/Navigation';
-// import SignUpPage1 from './src/pages/SignUpPage1';
-// import SignUpPage2 from './src/pages/SignUpPage2';
-// import PasswordPage1 from './src/pages/PasswordPage1';
+import LoginPage from './src/pages/LoginPage';
+import BottomTab from './src/Navigation';
+import SignUpPage from './src/pages/SignUpPage';
+import PasswordPage from './src/pages/PasswordPage';
 // import PasswordPage2 from './src/pages/PasswordPage2';
 
 import HelloReactNativePage from './src/pages/HelloReactNative';
 
 const AppNavigator = createStackNavigator(
   {
-    // Login: {
-    //   screen: LoginPage,
-    //   navigationOptions: {
-    //     title: 'Login',
-    //   },
-    // },
-    // SignUpPage1: {
-    //   screen: SignUpPage1,
-    //   navigationOptions: {
-    //     title: 'Signup',
-    //   },
-    // },
-    // SignUpPage2: {
-    //   screen: SignUpPage2,
-    //   navigationOptions: {
-    //     title: 'Signup',
-    //   },
-    // },
-    // PasswordPage1: {
-    //   screen: PasswordPage1,
-    //   navigationOptions: {
-    //     title: 'Password',
-    //   },
-    // },
+    Login: {
+      screen: LoginPage,
+      navigationOptions: {
+        title: 'Login',
+      },
+    },
+    SignUpPage: {
+      screen: SignUpPage,
+      navigationOptions: {
+        title: 'Signup',
+      },
+    },
+
+    PasswordPage: {
+      screen: PasswordPage,
+      navigationOptions: {
+        title: 'Password',
+      },
+    },
     // PasswordPage2: {
     //   screen: PasswordPage2,
     //   navigationOptions: {
@@ -55,7 +49,7 @@ const AppNavigator = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'HelloReactNative',
+    initialRouteName: 'Login',
     headerMode: 'none',
   },
 );

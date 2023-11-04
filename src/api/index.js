@@ -18,13 +18,13 @@ export default class APIManager {
     });
   }
 
-  static async singup(email, password, name, graduationYear, votingWeight) {
+  static async signUp(email, password, name, sex, graduationYear) {
     return await APIRequestHelper.request('/app/user-signup', 'POST', false, {
       email,
       password,
       name,
+      sex,
       graduationYear,
-      votingWeight,
     });
   }
 
@@ -40,13 +40,14 @@ export default class APIManager {
     );
   }
 
-  static async requestEmailValidation(email) {
+  static async requestEmailValidation(email, shouldExist = false) {
     return await APIRequestHelper.request(
       '/app/request-email-validation',
       'POST',
       false,
       {
         email,
+        shouldExist,
       },
     );
   }

@@ -51,7 +51,7 @@ export default function LoginPage({navigation}) {
           fontClassName={'font-normal text-lg font-semibold text-white'}
         />
         <Space size="h-3" />
-        <Option />
+        <Option navigation={navigation} />
       </View>
     </Container>
   );
@@ -62,7 +62,7 @@ function EmailInput({email, setEmail}) {
     <View className="relative flex w-full flex-row items-end justify-between">
       <Input
         label="Email"
-        placeholder="Hello React Native"
+        placeholder="Type your email"
         value={email}
         setValue={setEmail}
         extraClassName="text-normal h-12"
@@ -86,7 +86,7 @@ function PasswordInput({password, setPassword}) {
     <View className="flex flex-row items-end justify-between">
       <Input
         label="Password"
-        placeholder="Hello React Native"
+        placeholder="Type your password"
         value={password}
         setValue={setPassword}
         extraClassName="text-normal h-12"
@@ -96,14 +96,14 @@ function PasswordInput({password, setPassword}) {
   );
 }
 
-function Option() {
+function Option({navigation}) {
   return (
     <>
       <View className="flex flex-row items-center justify-between bg-transparent">
         <Button
           label={'Sign Up'}
           onPress={() => {
-            Alert.alert('Please contact the administrator.');
+            navigation.navigate('SignUpPage');
           }}
           extraClassName={
             'text-xs text-white border-0 shadow-none bg-transparent'
@@ -114,7 +114,7 @@ function Option() {
         <Button
           label={'Forgot Password?'}
           onPress={() => {
-            Alert.alert('Please contact the administrator.');
+            navigation.navigate('PasswordPage');
           }}
           extraClassName={
             'text-xs text-white  border-0 shadow-none bg-transparent'

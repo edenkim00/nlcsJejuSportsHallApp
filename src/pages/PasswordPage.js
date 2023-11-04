@@ -1,20 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect} from 'react';
+import React from 'react';
 import APIManager from '../api';
 
 import {Container} from '../components/Container';
-import {View, Alert, Text} from 'react-native';
+import {View, Alert} from 'react-native';
 import {Input, InputWithTailButton} from '../components/Input';
 import {Space} from '../components/Space';
 import {Button} from '../components/Button';
 import {useState} from 'react';
 import {mayAlert} from '../lib/utils';
 import {emailRegExp} from '../lib/constants';
-import Dropdown from '../components/Dropdown';
-import {getGraduationYears} from '../lib/utils';
 let emailValidationCode = null;
 
-export default function SignUpPage({navigation}) {
+export default function PasswordPage({navigation}) {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordVerification, setNewPasswordVerification] = useState('');
