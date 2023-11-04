@@ -1,3 +1,4 @@
+import {Alert} from 'react-native';
 export function getWeekDateList(startDate, endDate) {
   const dateList = [];
   let currentDate = startDate;
@@ -16,4 +17,18 @@ export function isValidVoteData(voteData, dateRanges) {
     }
   }
   return true;
+}
+
+export function mayAlert(response) {
+  const {code, message} = response;
+  if (!code || !message) {
+    Alert.alert('Please try again later.');
+    return;
+  }
+
+  if (response.code !== 1000) {
+    Alert.alert(response.message);
+  }
+
+  return;
 }

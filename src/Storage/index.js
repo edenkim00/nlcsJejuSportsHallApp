@@ -1,17 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class Storage {
-  static get(key) {
-    return AsyncStorage.getItem(key);
+  static async get(key) {
+    try {
+      return await AsyncStorage.getItem(key);
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
-  static set(key, value) {
-    AsyncStorage.setItem(key, value);
+  static async set(key, value) {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  static remove(key) {
-    AsyncStorage.removeItem(key);
+  static async remove(key) {
+    await AsyncStorage.removeItem(key);
   }
+
   static async getAuth() {
     try {
       const loginInfo = await Storage.get('sportshall_loginInfo');

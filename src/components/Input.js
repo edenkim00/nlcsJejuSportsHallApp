@@ -9,6 +9,7 @@ export function Input({
   placeholder,
   extraClassName,
   width,
+  hideText = false,
 }) {
   return (
     <View
@@ -31,6 +32,7 @@ export function Input({
         value={value}
         onChangeText={setValue}
         placeholder={placeholder}
+        secureTextEntry={hideText}
       />
     </View>
   );

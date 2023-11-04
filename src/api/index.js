@@ -43,25 +43,10 @@ export default class APIManager {
   static async requestEmailValidation(email) {
     return await APIRequestHelper.request(
       '/app/request-email-validation',
-      'GET',
+      'POST',
       false,
-      undefined,
       {
         email,
-      },
-    );
-  }
-
-  static async findPassword(email, grade, name) {
-    return await APIRequestHelper.request(
-      '/app/forgot-password',
-      'GET',
-      false,
-      undefined,
-      {
-        email,
-        grade,
-        name,
       },
     );
   }
@@ -77,10 +62,9 @@ export default class APIManager {
 
   static async reportVoteResult(email, year, month) {
     return await APIRequestHelper.request(
-      '/app/sending-email-result',
-      'GET',
+      '/app/report-vote-result',
+      'POST',
       true,
-      undefined,
       {
         email,
         year,
