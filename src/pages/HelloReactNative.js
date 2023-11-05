@@ -1,106 +1,131 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {LogBox, View, Text, Alert} from 'react-native';
+import {LogBox, View, Text, Alert, TouchableOpacity} from 'react-native';
 import APIManager from '../api';
 import Space from '../components/Space';
 import Button from '../components/Button';
 import LoadingComponent from '../components/Loading';
 import AdminModal from '../components/AdminModal';
 import Helper from '../helper';
+import MonthPicker from 'react-native-month-year-picker';
+import InfoModal from '../components/InfoModal';
+export default function HomePage() {
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
 
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-  'Non-serializable values were found in the navigation state. Check:',
-]);
+  const [selectedYear, setSelectedYear] = useState(todayYear);
+  const [selectedMonth, setSelectedMonth] = useState(todayMonth);
 
-export default function MyPage(props) {
-  const handleMoveToLogin = props?.route?.params?.handleMoveToLogin;
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(true);
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [userInfo, setUserInfo] = useState(undefined);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const userInfoFromHelper = await Helper.getUserInfo();
-      if (!userInfoFromHelper) {
-        return;
-      }
-      if (userInfoFromHelper?.userId === 1) {
-        setIsAdmin(true);
-      }
-      setUserInfo(userInfoFromHelper);
-      setLoading(false);
-    };
-    fetchUserInfo();
-  }, []);
-
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showVoteModal, setShowVoteModal] = useState(false);
   return (
     <>
-      <View className="flex flex-col items-center justify-center">
-        {loading ? (
-          <LoadingComponent />
-        ) : (
-          <View className="flex h-full flex-col items-center justify-center">
-            <Space size="h-36" />
-            {userInfo && (
-              <>
-                <Text className="text-2xl font-bold text-white">
-                  Welcome,
-                  <Space size="w-1" />
-                  <Text className="text-green-400">{userInfo.name} 🔥</Text>
-                </Text>
-                <Space size="h-6" />
-                <Text className="text-lg font-semibold text-white">
-                  Choose your preferred exercise freely!
-                </Text>
-              </>
-            )}
-
-            {isAdmin && (
-              <>
-                <Space size="h-18" />
-                <Button
-                  label={'🔊 Report'}
-                  onPress={() => {
-                    setShowAdminModal(true);
-                  }}
-                  extraClassName={
-                    'border-2 border-[#00AAAA] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl'
-                  }
-                  fontClassName={'font-normal text-lg font-semibold text-white'}
-                />
-              </>
-            )}
-
-            <Button
-              label={'Logout'}
-              onPress={async () => {
-                await Helper.handleLogout();
-                if (handleMoveToLogin) {
-                  handleMoveToLogin();
-                } else {
-                  Alert.alert('Please try again later.');
-                }
-              }}
-              extraClassName={
-                'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-36'
-              }
-              fontClassName={'font-normal text-lg font-semibold text-white'}
-            />
-          </View>
-        )}
+      <View className="flex h-full w-full flex-col items-center justify-center">
+        <Space size="h-32" />
+        <View className="flex w-full flex-row justify-end">
+          <TouchableOpacity
+            className="right-[5%] flex flex-row items-center justify-center rounded-xl border border-green-300 px-5 py-4"
+            onPress={() => {
+              setShowInfoModal(true);
+            }}>
+            <View>
+              <Text className="text-center text-white">🗣️ Learning</Text>
+              <Text className="text-center text-white">Voting Polices</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Space size="h-16" />
+        <Text className="text-xl font-semibold text-yellow-300">
+          Year and Month
+        </Text>
+        <Space size="h-4" />
+        <TouchableOpacity
+          className="flex w-3/4 flex-row justify-center border border-white px-8 py-2 shadow-2xl shadow-yellow-100"
+          onPress={() => {
+            setShowMonthPicker(true);
+          }}>
+          <Text className="text-center text-lg font-semibold text-white">
+            {selectedYear}-{selectedMonth} ▽
+          </Text>
+        </TouchableOpacity>
+        <Space size="h-4" />
+        <View className="absolute bottom-[15%] left-[20%] flex w-full flex-row">
+          <TouchableOpacity
+            className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
+            onPress={() => {
+              //TODO: handle vote modal
+            }}>
+            <Text className="text-center text-xl font-semibold text-white">
+              Select Sports
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <AdminModal
-        visible={showAdminModal}
-        onSubmit={async ({email, year, month}) => {
-          await APIManager.reportVoteResult(email, year, month);
-          setShowAdminModal(false);
-        }}
-        onClose={() => {
-          setShowAdminModal(false);
+      <Modals
+        {...{
+          showInfoModal,
+          showMonthPicker,
+          showVoteModal,
+          selectedYear,
+          setSelectedYear,
+          selectedMonth,
+          setSelectedMonth,
+          setShowInfoModal,
+          setShowMonthPicker,
+          setShowVoteModal,
         }}
       />
+    </>
+  );
+}
+
+function Modals({
+  showInfoModal,
+  setShowInfoModal,
+  showMonthPicker,
+  setShowMonthPicker,
+  showVoteModal,
+  setShowVoteModal,
+  selectedYear,
+  setSelectedYear,
+  selectedMonth,
+  setSelectedMonth,
+}) {
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
+  return (
+    <>
+      {showMonthPicker && (
+        <View className="bottom-[8%] z-auto w-full">
+          <MonthPicker
+            onChange={(event, newDate) => {
+              if (event === 'dateSetAction') {
+                if (newDate && newDate?.getFullYear() && newDate?.getMonth()) {
+                  setSelectedYear(newDate?.getFullYear());
+                  setSelectedMonth(newDate?.getMonth());
+                }
+              }
+              setShowMonthPicker(false);
+            }}
+            minimumDate={new Date(todayYear, todayMonth - 1)}
+            maximumDate={new Date(todayYear + 1, 0)}
+            value={new Date(selectedYear, selectedMonth)}
+            locale="ko"
+            mode="spinner"
+          />
+        </View>
+      )}
+      {showInfoModal && (
+        <InfoModal
+          {...{
+            showInfoModal,
+            setShowInfoModal,
+          }}
+        />
+      )}
     </>
   );
 }
