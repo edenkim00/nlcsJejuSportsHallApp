@@ -2,12 +2,12 @@
 import React from 'react';
 import {ImageBackground, View, Text} from 'react-native';
 
-export function Container({children}) {
+export default function Container({children}) {
   return (
-    <View className="flex flex-col items-center justify-center ">
+    <View className="z-0 flex flex-col items-center justify-center">
       <ImageBackground
         source={require('../../assets/backgrounds.jpg')}
-        style={{width: '100%', height: '100%'}}
+        style={{width: '100%', height: '100%', zIndex: 0}}
         className="flex flex-col items-center justify-center text-white">
         <Text className="absolute top-32 text-4xl font-bold text-white">
           Sports Hall

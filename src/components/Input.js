@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import clsx from 'clsx';
 import {TextInput, View, Text} from 'react-native';
-import {Button} from './Button';
-export function Input({
+import Button from './Button';
+export default function Input({
   label = undefined,
   value,
   setValue,
   placeholder,
   extraClassName,
+  fontClassName,
   width,
   hideText = false,
 }) {
@@ -19,7 +20,11 @@ export function Input({
       )}>
       {label && (
         <View className="relative z-50 w-full">
-          <Text className="absolute -top-2 left-1/4 z-50 -ml-7 text-xl font-bold text-yellow-300">
+          <Text
+            className={clsx(
+              'absolute -top-2 left-1/4 z-50 -ml-7 text-xl font-bold text-yellow-300',
+              fontClassName,
+            )}>
             {label}
           </Text>
         </View>

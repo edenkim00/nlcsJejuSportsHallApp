@@ -35,12 +35,19 @@ const AppNavigator = createStackNavigator(
     //     title: 'Password',
     //   },
     // },
-    // BottomTab: {
-    //   screen: BottomTab,
-    //   navigationOptions: {
-    //     title: 'Vote Application',
-    //   },
-    // },
+    BottomTab: {
+      screen: BottomTab,
+      navigationOptions: {
+        title: 'Vote Application',
+      },
+    },
+
+    MyPage: {
+      screen: HelloReactNativePage,
+      navigationOptions: {
+        title: 'My Page',
+      },
+    },
     HelloReactNative: {
       screen: HelloReactNativePage,
       navigationOptions: {

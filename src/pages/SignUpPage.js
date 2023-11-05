@@ -33,6 +33,12 @@ export default function SignUpPage({navigation}) {
       Alert.alert('Please type valid email.');
       return false;
     }
+
+    if (name.length > 15) {
+      Alert.alert('Name should be less than 16 characters.');
+      return false;
+    }
+
     if (password.length < 4 || password.length > 12) {
       Alert.alert('Password should be 4-12 characters.');
       return false;

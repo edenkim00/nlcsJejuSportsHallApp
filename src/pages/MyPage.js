@@ -1,233 +1,106 @@
-// /* eslint-disable react-native/no-inline-styles */
-// import React, {useState, useEffect} from 'react';
-// import {
-//   LogBox,
-//   ImageBackground,
-//   TouchableOpacity,
-//   View,
-//   Text,
-//   Button,
-//   Alert,
-//   Modal,
-//   TextInput,
-// } from 'react-native';
-// import APIManager from '../api';
-// import {styles, myPageStyles, modalStyles} from '../styles/styles';
-// import {ScrollView} from 'react-native-gesture-handler';
-// import Storage from '../Storage';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect} from 'react';
+import {LogBox, View, Text, Alert} from 'react-native';
+import APIManager from '../api';
+import Space from '../components/Space';
+import Button from '../components/Button';
+import LoadingComponent from '../components/Loading';
+import AdminModal from '../components/AdminModal';
+import Helper from '../helper';
 
-// LogBox.ignoreLogs([
-//   'Non-serializable values were found in the navigation state',
-//   'Non-serializable values were found in the navigation state. Check:',
-// ]);
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+  'Non-serializable values were found in the navigation state. Check:',
+]);
 
-// function MypageComponent({navigation, route}) {
-//   const rootNavigation = route.params.rootNavigation;
-//   const [name, setName] = useState('');
-//   const [grade, setGrade] = useState('');
-//   const [loading, setLoading] = useState(true);
-//   const [isAdmin, setIsAdmin] = useState(false);
-//   const [adminModalShow, setAdminModalShow] = useState(false);
-//   const [adminEmail, setAdminEmail] = useState('');
-//   const [adminYear, setAdminYear] = useState('');
-//   const [adminMonth, setAdminMonth] = useState('');
+export default function MyPage(props) {
+  const handleMoveToLogin = props?.route?.params?.handleMoveToLogin;
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [userInfo, setUserInfo] = useState(undefined);
 
-//   const sendEmailToAdmin = async () => {
-//     try {
-//       const apiResult = await APIManager.reportVoteResult(
-//         adminEmail,
-//         adminYear,
-//         adminMonth,
-//       );
-//       if (apiResult.code === 8001) {
-//         Alert.alert('There is no data for the year and month.');
-//         return;
-//       } else if (apiResult.code !== 1000) {
-//         Alert.alert('Please try again later.');
-//         return;
-//       }
-//       Alert.alert('Email sent successfully.');
-//     } catch {
-//       Alert.alert('Please try again later.');
-//       return;
-//     }
-//   };
-//   const handleLogout = async () => {
-//     rootNavigation.navigate('Login');
-//   };
-//   useEffect(() => {
-//     const fetchUserInfo = async () => {
-//       try {
-//         let [userName, userGrade] = await Promise.all([
-//           Storage.get('sportshall_userName'),
-//           Storage.get('sportshall_userGrade'),
-//         ]);
-//         if (userName && userGrade) {
-//           setName(userName);
-//           setGrade(userGrade);
-//           setLoading(false);
-//           return;
-//         }
-//         const userInfoData = await APIManager.getUserInfo();
-//         if (!userInfoData) {
-//           Alert.alert('Auth Failed. Please re-login.');
-//           return;
-//         }
-//         if (userInfoData.code !== 1000) {
-//           Alert.alert('Connection error. Please retry later.');
-//           return;
-//         }
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfoFromHelper = await Helper.getUserInfo();
+      if (!userInfoFromHelper) {
+        return;
+      }
+      if (userInfoFromHelper?.userId === 1) {
+        setIsAdmin(true);
+      }
+      setUserInfo(userInfoFromHelper);
+      setLoading(false);
+    };
+    fetchUserInfo();
+  }, []);
 
-//         userName = userInfoData.result.name;
-//         userGrade = userInfoData.result.grade;
-//         await Promise.all([
-//           Storage.set('sportshall_userName', userName),
-//           Storage.set('sportshall_userGrade', userGrade),
-//         ]);
-//         setName(userName);
-//         setGrade(userGrade);
-//         setLoading(false);
-//       } catch (err) {
-//         Alert.alert('Please try again later.');
-//         navigation.navigate('Home');
-//       }
-//     };
-//     fetchUserInfo();
-//     Storage.get('sportshall_email').then(email => {
-//       if (email === 'admin@pupils.nlcsjeju.kr') {
-//         setIsAdmin(true);
-//       }
-//     });
-//   }, [navigation]);
+  return (
+    <>
+      <View className="flex flex-col items-center justify-center">
+        {loading ? (
+          <LoadingComponent />
+        ) : (
+          <View className="flex h-full flex-col items-center justify-center">
+            <Space size="h-36" />
+            {userInfo && (
+              <>
+                <Text className="text-2xl font-bold text-white">
+                  Welcome,
+                  <Space size="w-1" />
+                  <Text className="text-green-400">{userInfo.name} 🔥</Text>
+                </Text>
+                <Space size="h-6" />
+                <Text className="text-lg font-semibold text-white">
+                  Choose your preferred exercise freely!
+                </Text>
+              </>
+            )}
 
-//   return loading ? (
-//     <ImageBackground
-//       source={require('../../assets/backgrounds.jpg')}
-//       style={styles.bottomTabContainer}>
-//       <Text style={styles.title1}>Sports Hall</Text>
-//       <Text style={styles.title2}>VOTING SYSTEM</Text>
-//       <Text style={styles.title3}>@NLCS JEJU</Text>
-//       <Text style={myPageStyles.text_loading}>Loading...</Text>
-//     </ImageBackground>
-//   ) : (
-//     <ImageBackground
-//       source={require('../../assets/backgrounds.jpg')}
-//       style={styles.bottomTabContainer}>
-//       <Text style={styles.title1}>Sports Hall</Text>
-//       <Text style={styles.title2}>VOTING SYSTEM</Text>
-//       <Text style={styles.title3}>@NLCS JEJU</Text>
-//       {isAdmin && (
-//         <TouchableOpacity
-//           style={myPageStyles.admin_button}
-//           onPress={() => setAdminModalShow(true)}>
-//           <Text
-//             style={{
-//               color: 'white',
-//               fontSize: 15,
-//               textAlign: 'center',
-//               padding: '3%',
-//             }}>
-//             🗣️ Voting Result (admin)
-//           </Text>
-//         </TouchableOpacity>
-//       )}
-//       <View style={{marginTop: '12.5%'}} />
-//       <Text style={myPageStyles.text}>Name: {name}</Text>
-//       <Text style={myPageStyles.text}>Grade: {grade}</Text>
-//       <View style={{marginTop: '7.5%'}} />
-//       <View style={myPageStyles.logout_button}>
-//         <Button title="Logout" onPress={handleLogout} color="#FFFFFF" />
-//       </View>
-//       <AdminModal
-//         visible={adminModalShow}
-//         onClose={() => setAdminModalShow(false)}
-//         onSubmit={sendEmailToAdmin}
-//         setAdminEmail={setAdminEmail}
-//         setAdminYear={setAdminYear}
-//         setAdminMonth={setAdminMonth}
-//         adminEmail={adminEmail}
-//         adminYear={adminYear}
-//         adminMonth={adminMonth}
-//       />
-//     </ImageBackground>
-//   );
-// }
+            {isAdmin && (
+              <>
+                <Space size="h-18" />
+                <Button
+                  label={'🔊 Report'}
+                  onPress={() => {
+                    setShowAdminModal(true);
+                  }}
+                  extraClassName={
+                    'border-2 border-[#00AAAA] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl'
+                  }
+                  fontClassName={'font-normal text-lg font-semibold text-white'}
+                />
+              </>
+            )}
 
-// export default MypageComponent;
-
-// const AdminModal = ({
-//   visible,
-//   onClose,
-//   onSubmit,
-//   adminEmail,
-//   setAdminEmail,
-//   adminYear,
-//   setAdminYear,
-//   adminMonth,
-//   setAdminMonth,
-// }) => {
-//   return (
-//     <Modal visible={visible} transparent animationType="slide">
-//       <View style={modalStyles.modalOverlay}>
-//         <View style={modalStyles.modalContent}>
-//           <Text
-//             style={{
-//               textAlign: 'center',
-//               fontSize: 18,
-//               color: 'darkblue',
-//               marginBottom: '3%',
-//             }}>
-//             Your Email
-//           </Text>
-//           <ScrollView>
-//             <TextInput
-//               style={myPageStyles.input}
-//               value={adminEmail}
-//               onChangeText={text => setAdminEmail(text)}
-//             />
-//             <Text
-//               style={{
-//                 textAlign: 'center',
-//                 fontSize: 18,
-//                 color: 'darkblue',
-//                 marginBottom: '3%',
-//               }}>
-//               Year (ex: 2023)
-//             </Text>
-//             <TextInput
-//               style={myPageStyles.input}
-//               value={adminYear}
-//               onChangeText={text => setAdminYear(text)}
-//             />
-//             <Text
-//               style={{
-//                 textAlign: 'center',
-//                 fontSize: 18,
-//                 color: 'darkblue',
-//                 marginBottom: '3%',
-//               }}>
-//               Month (1~12)
-//             </Text>
-//             <TextInput
-//               style={myPageStyles.input}
-//               value={adminMonth}
-//               onChangeText={text => setAdminMonth(text)}
-//             />
-//           </ScrollView>
-//           <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-//             <TouchableOpacity
-//               style={modalStyles.closeButton}
-//               onPress={async () => {
-//                 await onSubmit();
-//               }}>
-//               <Text style={modalStyles.submitButtonText}>Submit</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity style={modalStyles.closeButton} onPress={onClose}>
-//               <Text style={modalStyles.closeButtonText}>Close</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </View>
-//     </Modal>
-//   );
-// };
+            <Button
+              label={'Logout'}
+              onPress={async () => {
+                await Helper.handleLogout();
+                if (handleMoveToLogin) {
+                  handleMoveToLogin();
+                } else {
+                  Alert.alert('Please try again later.');
+                }
+              }}
+              extraClassName={
+                'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-36'
+              }
+              fontClassName={'font-normal text-lg font-semibold text-white'}
+            />
+          </View>
+        )}
+      </View>
+      <AdminModal
+        visible={showAdminModal}
+        onSubmit={async ({email, year, month}) => {
+          await APIManager.reportVoteResult(email, year, month);
+          setShowAdminModal(false);
+        }}
+        onClose={() => {
+          setShowAdminModal(false);
+        }}
+      />
+    </>
+  );
+}

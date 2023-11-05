@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
 import {Text, TouchableOpacity} from 'react-native';
 import clsx from 'clsx';
-export function Button({label, onPress, extraClassName, fontClassName}) {
+export default function Button({
+  label,
+  onPress,
+  extraClassName,
+  fontClassName,
+}) {
   const [calling, setCalling] = useState(false);
   return (
     <TouchableOpacity

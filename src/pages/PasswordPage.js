@@ -2,11 +2,11 @@
 import React from 'react';
 import APIManager from '../api';
 
-import {Container} from '../components/Container';
+import Container from '../components/Container';
 import {View, Alert} from 'react-native';
-import {Input, InputWithTailButton} from '../components/Input';
-import {Space} from '../components/Space';
-import {Button} from '../components/Button';
+import Input, {InputWithTailButton} from '../components/Input';
+import Space from '../components/Space';
+import Button from '../components/Button';
 import {useState} from 'react';
 import {mayAlert} from '../lib/utils';
 import {emailRegExp} from '../lib/constants';
