@@ -9,13 +9,14 @@ import AdminModal from '../components/AdminModal';
 import Helper from '../helper';
 import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
+import VoteModal from '../components/VoteModal';
 export default function HomePage() {
   const today = new Date();
   const todayYear = today.getFullYear();
   const todayMonth = today.getMonth() + 1;
 
   const [selectedYear, setSelectedYear] = useState(todayYear);
-  const [selectedMonth, setSelectedMonth] = useState(todayMonth);
+  const [selectedMonth, setSelectedMonth] = useState(todayMonth + 1);
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -55,7 +56,7 @@ export default function HomePage() {
           <TouchableOpacity
             className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
             onPress={() => {
-              //TODO: handle vote modal
+              setShowVoteModal(true);
             }}>
             <Text className="text-center text-xl font-semibold text-white">
               Select Sports
@@ -110,7 +111,7 @@ function Modals({
               }
               setShowMonthPicker(false);
             }}
-            minimumDate={new Date(todayYear, todayMonth - 1)}
+            minimumDate={new Date(todayYear, todayMonth + 1)}
             maximumDate={new Date(todayYear + 1, 0)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
@@ -123,6 +124,14 @@ function Modals({
           {...{
             showInfoModal,
             setShowInfoModal,
+          }}
+        />
+      )}
+      {showVoteModal && (
+        <VoteModal
+          {...{
+            showVoteModal,
+            setShowVoteModal,
           }}
         />
       )}

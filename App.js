@@ -29,12 +29,6 @@ const AppNavigator = createStackNavigator(
         title: 'Password',
       },
     },
-    // PasswordPage2: {
-    //   screen: PasswordPage2,
-    //   navigationOptions: {
-    //     title: 'Password',
-    //   },
-    // },
     BottomTab: {
       screen: BottomTab,
       navigationOptions: {

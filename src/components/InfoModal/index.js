@@ -38,7 +38,7 @@ export default function InfoModal({showInfoModal, setShowInfoModal}) {
             </Text>
           </ScrollView>
         </View>
-        <View className="h-[10%] bottom-2 absolute right-6">
+        <View className="absolute bottom-2 right-6 h-[10%]">
           <TouchableOpacity
             className=""
             onPress={() => {

@@ -151,7 +151,7 @@ export default function PasswordPage({navigation}) {
             />
             <Space size="h-10" />
             <Button
-              label={'Sign Up'}
+              label={'Change Password'}
               onPress={handlePasswordChange}
               extraClassName={
                 'border-2 border-[#AAFF] shadow-blue-900 shadow-lg w-48 bg-transparent h-12 rounded-xl'
