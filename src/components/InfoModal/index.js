@@ -4,7 +4,7 @@ import Space from '../Space';
 export default function InfoModal({showInfoModal, setShowInfoModal}) {
   return (
     <Modal visible={showInfoModal} transparent animationType="slide">
-      <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFBB] px-6  py-8">
+      <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFBB] px-4  py-8">
         <View className="h-[90%]">
           <Text className="h-[10%] text-center text-2xl font-bold text-purple-900">
             ℹ️ Voting Policies

@@ -35,5 +35,5 @@ export function mayAlert(response) {
 
 export function getGraduationYears() {
   const currentYear = new Date().getFullYear();
-  return Array.from({length: 20}, (_, i) => String(currentYear + i));
+  return Array.from({length: 15}, (_, i) => String(currentYear + i));
 }

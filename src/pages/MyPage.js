@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {LogBox, View, Text, Alert} from 'react-native';
+import {LogBox, View, Text} from 'react-native';
 import APIManager from '../api';
 import Space from '../components/Space';
 import Button from '../components/Button';
@@ -15,13 +15,15 @@ LogBox.ignoreLogs([
 
 export default function MyPage(props) {
   const handleMoveToLogin = props?.route?.params?.handleMoveToLogin;
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
+      setLoading(true);
+
       const userInfoFromHelper = await Helper.getUserInfo();
       if (!userInfoFromHelper) {
         return;
@@ -72,22 +74,19 @@ export default function MyPage(props) {
                 />
               </>
             )}
-
-            <Button
-              label={'Logout'}
-              onPress={async () => {
-                await Helper.handleLogout();
-                if (handleMoveToLogin) {
-                  handleMoveToLogin();
-                } else {
-                  Alert.alert('Please try again later.');
+            {handleMoveToLogin && (
+              <Button
+                label={'Logout'}
+                onPress={async () => {
+                  props?.route?.params?.handleMoveToLogin();
+                  await Helper.handleLogout();
+                }}
+                extraClassName={
+                  'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-36'
                 }
-              }}
-              extraClassName={
-                'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-36'
-              }
-              fontClassName={'font-normal text-lg font-semibold text-white'}
-            />
+                fontClassName={'font-normal text-lg font-semibold text-white'}
+              />
+            )}
           </View>
         )}
       </View>

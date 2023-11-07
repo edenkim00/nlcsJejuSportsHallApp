@@ -13,18 +13,22 @@ import {mayAlert} from '../lib/utils';
 import {emailRegExp} from '../lib/constants';
 
 export default function LoginPage({navigation}) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const loginInfo = async () => {
       const loginInfoFromStorage = await Storage.get('sportshall_loginInfo');
+      console.log(loginInfoFromStorage, 'ds');
+      setLoading(false);
       if (loginInfoFromStorage) {
         navigation.navigate('BottomTab');
         return;
       }
       setLoading(false);
     };
+    console.log('HERE?');
+    setLoading(true);
     loginInfo();
-  }, [navigation]);
+  }, []);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

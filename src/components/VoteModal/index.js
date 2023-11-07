@@ -1,9 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+import {
+  Modal,
+  Alert,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Space from '../Space';
 import {DAYS_AVAILABLE, SPORTS_AVAILABLE} from './constants';
 import Dropdown from '../Dropdown';
-
+import {Picker} from '@react-native-picker/picker';
+const NONELABEL = 'None';
 const DROPDOWN_STYLE = {
   paddingHorizontal: '5%',
   marginHorizontal: '2%',
@@ -11,15 +19,50 @@ const DROPDOWN_STYLE = {
   color: 'black',
   borderWidth: 1,
   borderColor: 'black',
-  borderRadius: 2,
+  borderRadius: 30,
   width: '100%',
 };
 
+import SelectDropdown from 'react-native-select-dropdown';
+const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
+
+// TODO:
+// 1. Add validation for vote data - 아무것도 없을 때 NONE
+// 2. 스포츠별로 중복되지 않게 제한
+// 3. 투표 시기 다음달 시작전 일주일 마감
+// 4. 투표 웨이트 3:2
+// 5. 회원가입 페이지
+// 6. 결과 확인 페이지
+
 export default function VoteModal({showVoteModal, setShowVoteModal}) {
-  const [voteData, setVoteData] = useState({});
+  const [voteData, setVoteData] = useState(
+    Object.fromEntries(
+      DAYS_AVAILABLE.map(day => [day, [NONELABEL, NONELABEL]]),
+    ),
+  );
   const onVoteSelectorChange = (key, value) => {
-    setVoteData({...voteData, key: value});
+    setVoteData({...voteData, [key]: value});
   };
+
+  function validateVoteData() {
+    console.log(voteData);
+
+    return !DAYS_AVAILABLE.map(day => {
+      return (
+        voteData &&
+        voteData[day] &&
+        voteData[day].length == 2 &&
+        [...SPORTS_AVAILABLE, 'None'].includes(voteData[day][0]) &&
+        [...SPORTS_AVAILABLE, 'None'].includes(voteData[day][1]) &&
+        (voteData[day][0] != voteData[day][1] || voteData[day][0] == 'None')
+      );
+    }).some(x => !x);
+  }
+  // return (
+  //   <View className="w-full h-full bg-white">
+
+  //   </View>
+  // );
   return (
     <Modal visible={showVoteModal} transparent animationType="slide">
       <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFDD] px-6  py-8">
@@ -28,24 +71,46 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
             🗳️ Vote for Sports
           </Text>
           <Space size="h-4" />
+          <Header />
           <ScrollView className="h-3/4">
-            <Header />
-            <Space size="h-4" />
-            <VoteSelector
-              label={DAYS_AVAILABLE[0]}
-              onChange={onVoteSelectorChange}
-            />
+            <Space size="h-5" />
+            {DAYS_AVAILABLE.map((day, index) => {
+              return (
+                <View key={index}>
+                  <VoteSelector label={day} onChange={onVoteSelectorChange} />
+                  <Space size="h-3" />
+                </View>
+              );
+            })}
           </ScrollView>
         </View>
-        <View className="absolute bottom-2 right-6 h-[10%]">
+
+        <View className="absolute bottom-2 right-6 h-[10%] flex flex-row">
+          <TouchableOpacity
+            className=""
+            onPress={() => {
+              if (!validateVoteData()) {
+                Alert.alert('Invalid Vote Data', 'Please check your vote data');
+                return;
+              }
+              setShowVoteModal(false);
+            }}>
+            <View className="flex flex-row">
+              <Space size="w-4" />
+              <Text className="text-center text-lg font-semibold text-blue-900 ">
+                Submit
+              </Text>
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             className=""
             onPress={() => {
               setShowVoteModal(false);
             }}>
-            <Text className="text-center text-lg font-semibold text-blue-900">
-              Close
-            </Text>
+            <View className="flex flex-row">
+              <Space size="w-4" />
+              <Text className="text-center text-lg font-semibold">Close</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -73,44 +138,63 @@ function Header() {
 }
 
 function VoteSelector({label, onChange}) {
-  console.log('key', DAYS_AVAILABLE[0]);
+  const [firstSportsOptions, setFirstSportsOptions] = useState([
+    ...SPORTS_AVAILABLE,
+  ]);
+  const [secondSportsOptions, setSecondSportsOptions] = useState([
+    ...SPORTS_AVAILABLE,
+  ]);
 
-  const [firstOption, setFirstOption] = useState(SPORTS_AVAILABLE[0].value);
-  const [secondOption, setSecondOption] = useState(SPORTS_AVAILABLE[0].value);
-  const SPORTS_LABELS = SPORTS_AVAILABLE.map(s => s.label);
+  const [firstOption, setFirstOption] = useState(NONELABEL);
+  const [secondOption, setSecondOption] = useState(NONELABEL);
+
   useEffect(() => {
-    onChange(label, [
-      SPORTS_LABELS.find(v => v.label === firstOption),
-      SPORTS_LABELS.find(v => v.label === secondOption),
+    setFirstSportsOptions([
+      ...SPORTS_AVAILABLE.filter(
+        sport => sport != secondOption && sport != NONELABEL,
+      ),
     ]);
-  }, [firstOption, secondOption]);
+    onChange(label, [firstOption, secondOption]);
+  }, [secondOption]);
+
+  useEffect(() => {
+    setSecondSportsOptions([
+      ...SPORTS_AVAILABLE.filter(
+        sport => sport != firstOption && sport != NONELABEL,
+      ),
+    ]);
+
+    onChange(label, [firstOption, secondOption]);
+  }, [firstOption]);
 
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="w-[30%] text-center text-lg font-semibold text-red-900">
-        {label?.label}
+      <Text className="w-[30%] text-center font-semibold text-green-800">
+        {label}
       </Text>
       <View className="flex w-[70%] flex-row px-1">
         <View className="w-[45%]">
-          <Dropdown
-            options={SPORTS_LABELS}
-            selectedOption={firstOption}
-            setSelectedOption={setFirstOption}
-            label="Sports"
-            style={DROPDOWN_STYLE}
+          <SportSelector
+            availableSports={firstSportsOptions}
+            onChange={setFirstOption}
           />
         </View>
         <Space size="w-[10%]" />
         <View className="w-[45%]">
-          <Dropdown
-            options={SPORTS_LABELS}
-            selectedOption={firstOption}
-            setSelectedOption={setFirstOption}
-            label="Sports"
-            style={DROPDOWN_STYLE}
+          <SportSelector
+            availableSports={secondSportsOptions}
+            onChange={setSecondOption}
           />
         </View>
       </View>
+    </View>
+  );
+}
+
+function SportSelector({availableSports, onChange}) {
+  return (
+    <View className="w-full">
+      <Dropdown options={availableSports} setSelectedOption={onChange} />
     </View>
   );
 }

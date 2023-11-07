@@ -1,17 +1,32 @@
 import React from 'react';
 import APIManager from '../api';
 
-import {Container} from '../components/Container';
+import Container from '../components/Container';
 import {View, Alert, Text} from 'react-native';
-import {Input, InputWithTailButton} from '../components/Input';
-import {Space} from '../components/Space';
-import {Button} from '../components/Button';
+import Input, {InputWithTailButton} from '../components/Input';
+import Space from '../components/Space';
+import Button from '../components/Button';
 import {useState} from 'react';
 import {mayAlert} from '../lib/utils';
 import {emailRegExp} from '../lib/constants';
 import Dropdown from '../components/Dropdown';
 import {getGraduationYears} from '../lib/utils';
 let emailValidationCode = null;
+
+const DROPDOWN_STYLE = {
+  borderColor: 'white',
+  marginLeft: '2%',
+  marginRight: 0,
+  marginTop: 0,
+  marginBottom: 0,
+};
+
+const DROPDOWN_BUTTON_TEXT_STYLE = {
+  fontSize: 14,
+  color: 'white',
+  textAlign: 'center',
+  fontWeight: '400',
+};
 
 export default function SignUpPage({navigation}) {
   const [email, setEmail] = useState('');
@@ -158,47 +173,47 @@ export default function SignUpPage({navigation}) {
           <>
             <Space size="h-8" />
             <Input
-              label="Password"
-              value={password}
-              setValue={setPassword}
-              extraClassName="text-normal h-12"
-            />
-            <Space size="h-8" />
-            <Input
               label="Name"
               value={name}
               setValue={setName}
               extraClassName="text-normal h-12"
             />
-            <Space size="h-8" />
+            <Space size="h-2" />
             <View className="flex w-3/4 flex-row items-center justify-between">
-              <View className="flex w-1/2">
-                <Dropdown
-                  options={['male', 'female']}
-                  selectedOption={sex}
-                  setSelectedOption={setSex}
-                  label="Sex"
-                  style={{
-                    width: '95%',
-                    paddingVertical: '6%',
-                    marginRight: '5%',
-                  }}
-                />
-              </View>
-              <View className="flex w-1/2 items-center">
+              <View className="flex w-[48%] flex-col items-center">
+                <Text className="mb-1 text-center text-lg font-semibold text-yellow-400">
+                  Graduation Year
+                </Text>
                 <Dropdown
                   options={getGraduationYears()}
-                  selectedOption={graduationYear}
                   setSelectedOption={setGraduationYear}
-                  label="Graduation Year"
-                  style={{
-                    width: '95%',
-                    paddingVertical: '6%',
-                    marginLeft: '5%',
-                  }}
+                  dropdownStyle={DROPDOWN_STYLE}
+                  buttonStyle={DROPDOWN_STYLE}
+                  buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}
+                />
+              </View>
+              <Space size="w-[4%]" />
+              <View className="flex w-[48%]">
+                <Text className="mb-1 text-center text-lg font-semibold text-yellow-400">
+                  Sex
+                </Text>
+                <Dropdown
+                  options={['male', 'female']}
+                  setSelectedOption={setGraduationYear}
+                  dropdownStyle={DROPDOWN_STYLE}
+                  buttonStyle={DROPDOWN_STYLE}
+                  buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}
                 />
               </View>
             </View>
+            <Space size="h-8" />
+            <Input
+              label="Password"
+              value={password}
+              setValue={setPassword}
+              extraClassName="text-normal h-12"
+            />
+
             <Space size="h-10" />
             <Button
               label={'Sign Up'}

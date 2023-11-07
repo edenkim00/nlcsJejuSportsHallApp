@@ -10,13 +10,12 @@ import Helper from '../helper';
 import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
 import VoteModal from '../components/VoteModal';
+import Dropdown from '../components/Dropdown';
 export default function HomePage() {
   const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth() + 1;
-
-  const [selectedYear, setSelectedYear] = useState(todayYear);
-  const [selectedMonth, setSelectedMonth] = useState(todayMonth + 1);
+  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const [selectedYear, setSelectedYear] = useState(aWeekLater.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 2);
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -95,8 +94,10 @@ function Modals({
   setSelectedMonth,
 }) {
   const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth() + 1;
+  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const year = aWeekLater.getFullYear();
+  const month = aWeekLater.getMonth() + 1;
+
   return (
     <>
       {showMonthPicker && (
@@ -106,13 +107,13 @@ function Modals({
               if (event === 'dateSetAction') {
                 if (newDate && newDate?.getFullYear() && newDate?.getMonth()) {
                   setSelectedYear(newDate?.getFullYear());
-                  setSelectedMonth(newDate?.getMonth());
+                  setSelectedMonth(newDate?.getMonth() + 1);
                 }
               }
               setShowMonthPicker(false);
             }}
-            minimumDate={new Date(todayYear, todayMonth + 1)}
-            maximumDate={new Date(todayYear + 1, 0)}
+            minimumDate={new Date(year, month)}
+            maximumDate={new Date(year + 1, 12)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
             mode="spinner"
