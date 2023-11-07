@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {LogBox, View, Text} from 'react-native';
 import APIManager from '../api';

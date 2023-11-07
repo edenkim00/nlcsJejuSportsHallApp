@@ -5,7 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import HomeComponent from './pages/HomePage';
-import ResultComponent from './pages/Result';
+// import ResultComponent from './pages/Result';
 import MypageComponent from './pages/MyPage';
 const Tab = createBottomTabNavigator();
 const TABBAR_OPTION = {
@@ -53,7 +53,7 @@ function MyTabs({navigation}) {
           component={withContainer(HomeComponent)}
           options={TABBAR_OPTION}
         />
-        {/* 
+        {/*
         <Tab.Screen
           name="Result"
           component={ResultComponent}

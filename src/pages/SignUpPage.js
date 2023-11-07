@@ -32,6 +32,7 @@ export default function SignUpPage({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [sex, setSex] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
   const [validating, setValidating] = useState(false);
