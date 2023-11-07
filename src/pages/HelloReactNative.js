@@ -1,16 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
-import {LogBox, View, Text, Alert, TouchableOpacity} from 'react-native';
-import APIManager from '../api';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
 import Space from '../components/Space';
-import Button from '../components/Button';
-import LoadingComponent from '../components/Loading';
-import AdminModal from '../components/AdminModal';
-import Helper from '../helper';
 import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
 import VoteModal from '../components/VoteModal';
-import Dropdown from '../components/Dropdown';
+
 export default function HomePage() {
   const today = new Date();
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);

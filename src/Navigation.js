@@ -4,7 +4,7 @@ import Container from './components/Container';
 import {NavigationContainer} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-import HomeComponent from './pages/HelloReactNative';
+import HomeComponent from './pages/HomePage';
 import ResultComponent from './pages/Result';
 import MypageComponent from './pages/MyPage';
 const Tab = createBottomTabNavigator();

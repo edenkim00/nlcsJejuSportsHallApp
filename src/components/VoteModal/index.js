@@ -23,17 +23,6 @@ const DROPDOWN_STYLE = {
   width: '100%',
 };
 
-import SelectDropdown from 'react-native-select-dropdown';
-const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
-
-// TODO:
-// 1. Add validation for vote data - 아무것도 없을 때 NONE
-// 2. 스포츠별로 중복되지 않게 제한
-// 3. 투표 시기 다음달 시작전 일주일 마감
-// 4. 투표 웨이트 3:2
-// 5. 회원가입 페이지
-// 6. 결과 확인 페이지
-
 export default function VoteModal({showVoteModal, setShowVoteModal}) {
   const [voteData, setVoteData] = useState(
     Object.fromEntries(
@@ -58,11 +47,7 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
       );
     }).some(x => !x);
   }
-  // return (
-  //   <View className="w-full h-full bg-white">
 
-  //   </View>
-  // );
   return (
     <Modal visible={showVoteModal} transparent animationType="slide">
       <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFDD] px-6  py-8">
@@ -121,15 +106,16 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
 function Header() {
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="w-[30%] text-center text-lg font-semibold text-red-900">
+      <Text className="w-[20%] text-center text-lg font-semibold text-red-900">
         Day
       </Text>
-      <View className="flex w-[70%] flex-row px-1">
-        <Text className="w-[45%] text-center text-lg font-semibold text-red-900">
+      <Space size="w-[5%]" />
+      <View className="flex w-[75%] flex-row px-1">
+        <Text className="w-[45%] text-center text-lg font-semibold text-purple-800">
           First
         </Text>
         <Space size="w-[10%]" />
-        <Text className="w-[45%] text-center text-lg font-semibold text-red-900">
+        <Text className="w-[45%] text-center text-lg font-semibold text-purple-800">
           Second
         </Text>
       </View>
@@ -169,10 +155,11 @@ function VoteSelector({label, onChange}) {
 
   return (
     <View className="flex flex-row items-center justify-between">
-      <Text className="w-[30%] text-center font-semibold text-green-800">
+      <Text className="w-[20%] text-center font-semibold text-green-800">
         {label}
       </Text>
-      <View className="flex w-[70%] flex-row px-1">
+      <Space size="w-[5%]" />
+      <View className="flex w-[75%] flex-row px-1">
         <View className="w-[45%]">
           <SportSelector
             availableSports={firstSportsOptions}
