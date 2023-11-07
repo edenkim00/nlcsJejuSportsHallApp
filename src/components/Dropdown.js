@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 const ROW_TEXT_STYLE = {
   textAlign: 'center',

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {
   Modal,
@@ -10,18 +11,7 @@ import {
 import Space from '../Space';
 import {DAYS_AVAILABLE, SPORTS_AVAILABLE} from './constants';
 import Dropdown from '../Dropdown';
-import {Picker} from '@react-native-picker/picker';
 const NONELABEL = 'None';
-const DROPDOWN_STYLE = {
-  paddingHorizontal: '5%',
-  marginHorizontal: '2%',
-  fontSize: 11,
-  color: 'black',
-  borderWidth: 1,
-  borderColor: 'black',
-  borderRadius: 30,
-  width: '100%',
-};
 
 export default function VoteModal({showVoteModal, setShowVoteModal}) {
   const [voteData, setVoteData] = useState(
@@ -40,10 +30,10 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
       return (
         voteData &&
         voteData[day] &&
-        voteData[day].length == 2 &&
+        voteData[day].length === 2 &&
         [...SPORTS_AVAILABLE, 'None'].includes(voteData[day][0]) &&
         [...SPORTS_AVAILABLE, 'None'].includes(voteData[day][1]) &&
-        (voteData[day][0] != voteData[day][1] || voteData[day][0] == 'None')
+        (voteData[day][0] !== voteData[day][1] || voteData[day][0] === 'None')
       );
     }).some(x => !x);
   }
@@ -70,9 +60,8 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
           </ScrollView>
         </View>
 
-        <View className="absolute bottom-2 right-6 h-[10%] flex flex-row">
+        <View className="absolute bottom-2 right-6 flex h-[10%] flex-row">
           <TouchableOpacity
-            className=""
             onPress={() => {
               if (!validateVoteData()) {
                 Alert.alert('Invalid Vote Data', 'Please check your vote data');
@@ -137,7 +126,7 @@ function VoteSelector({label, onChange}) {
   useEffect(() => {
     setFirstSportsOptions([
       ...SPORTS_AVAILABLE.filter(
-        sport => sport != secondOption && sport != NONELABEL,
+        sport => sport !== secondOption && sport !== NONELABEL,
       ),
     ]);
     onChange(label, [firstOption, secondOption]);
@@ -146,7 +135,7 @@ function VoteSelector({label, onChange}) {
   useEffect(() => {
     setSecondSportsOptions([
       ...SPORTS_AVAILABLE.filter(
-        sport => sport != firstOption && sport != NONELABEL,
+        sport => sport !== firstOption && sport !== NONELABEL,
       ),
     ]);
 
