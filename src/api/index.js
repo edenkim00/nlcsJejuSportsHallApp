@@ -1,4 +1,4 @@
-import Storage from '../Storage';
+import Storage from '../storage';
 const BASE_URL =
   'https://lspy262udm2a3l3xf6fcxdgzry0yxebi.lambda-url.ap-northeast-2.on.aws';
 
@@ -18,13 +18,13 @@ export default class APIManager {
     });
   }
 
-  static async singup(email, password, name, graduationYear, votingWeight) {
+  static async signUp(email, password, name, sex, graduationYear) {
     return await APIRequestHelper.request('/app/user-signup', 'POST', false, {
       email,
       password,
       name,
+      sex,
       graduationYear,
-      votingWeight,
     });
   }
 
@@ -40,28 +40,14 @@ export default class APIManager {
     );
   }
 
-  static async requestEmailValidation(email) {
+  static async requestEmailValidation(email, shouldExist = false) {
     return await APIRequestHelper.request(
       '/app/request-email-validation',
-      'GET',
+      'POST',
       false,
-      undefined,
       {
         email,
-      },
-    );
-  }
-
-  static async findPassword(email, grade, name) {
-    return await APIRequestHelper.request(
-      '/app/forgot-password',
-      'GET',
-      false,
-      undefined,
-      {
-        email,
-        grade,
-        name,
+        shouldExist,
       },
     );
   }
@@ -77,10 +63,9 @@ export default class APIManager {
 
   static async reportVoteResult(email, year, month) {
     return await APIRequestHelper.request(
-      '/app/sending-email-result',
-      'GET',
+      '/app/report-vote-result',
+      'POST',
       true,
-      undefined,
       {
         email,
         year,

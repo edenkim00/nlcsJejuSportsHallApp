@@ -1,162 +1,140 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {View, Text} from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import React, {useState, useEffect} from 'react';
+import {LogBox, View, Text, Alert, TouchableOpacity} from 'react-native';
+import APIManager from '../api';
+import Space from '../components/Space';
+import Button from '../components/Button';
+import LoadingComponent from '../components/Loading';
+import AdminModal from '../components/AdminModal';
+import Helper from '../helper';
+import MonthPicker from 'react-native-month-year-picker';
+import InfoModal from '../components/InfoModal';
+import VoteModal from '../components/VoteModal';
+export default function HomePage() {
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
 
-export default function HelloReactNativePage() {
+  const [selectedYear, setSelectedYear] = useState(todayYear);
+  const [selectedMonth, setSelectedMonth] = useState(todayMonth + 1);
+
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showVoteModal, setShowVoteModal] = useState(false);
   return (
     <>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: '40%',
-          marginBottom: '40%',
-          marginLeft: '10%',
-          marginRight: '10%',
-          borderRadius: 30,
-          backgroundColor: '#dddddd',
-        }}>
-        <OneDayVotingComponent label="Mon" />
-        <OneDayVotingComponent label="Tue" />
-        <OneDayVotingComponent label="Wed" />
-        <OneDayVotingComponent label="Thr" />
-        <OneDayVotingComponent label="Fri1" />
-        <OneDayVotingComponent label="Fri2" />
-        <OneDayVotingComponent label="Sat1" />
-        <OneDayVotingComponent label="Sat2" />
+      <View className="flex h-full w-full flex-col items-center justify-center">
+        <Space size="h-32" />
+        <View className="flex w-full flex-row justify-end">
+          <TouchableOpacity
+            className="right-[5%] flex flex-row items-center justify-center rounded-xl border border-green-300 px-5 py-4"
+            onPress={() => {
+              setShowInfoModal(true);
+            }}>
+            <View>
+              <Text className="text-center text-white">🗣️ Learning</Text>
+              <Text className="text-center text-white">Voting Polices</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Space size="h-16" />
+        <Text className="text-xl font-semibold text-yellow-300">
+          Year and Month
+        </Text>
+        <Space size="h-4" />
+        <TouchableOpacity
+          className="flex w-3/4 flex-row justify-center border border-white px-8 py-2 shadow-2xl shadow-yellow-100"
+          onPress={() => {
+            setShowMonthPicker(true);
+          }}>
+          <Text className="text-center text-lg font-semibold text-white">
+            {selectedYear}-{selectedMonth} ▽
+          </Text>
+        </TouchableOpacity>
+        <Space size="h-4" />
+        <View className="absolute bottom-[15%] left-[20%] flex w-full flex-row">
+          <TouchableOpacity
+            className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
+            onPress={() => {
+              setShowVoteModal(true);
+            }}>
+            <Text className="text-center text-xl font-semibold text-white">
+              Select Sports
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </>
-  );
-}
-
-function DividerComponent() {
-  return (
-    <View
-      style={{
-        width: '100%',
-        height: 1,
-        backgroundColor: 'black',
-        marginTop: '3%',
-        marginBottom: '3%',
-      }}
-    />
-  );
-}
-
-function OneDayVotingComponent({label}) {
-  return (
-    <>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-        }}>
-        <LabelComponent label={label} />
-        <VoteComponent />
-      </View>
-      <DividerComponent />
-    </>
-  );
-}
-
-function LabelComponent({label}) {
-  return (
-    <Text
-      style={{
-        fontSize: 18,
-        color: 'purple',
-        marginBottom: '3%',
-        marginLeft: '10%',
-        width: '35%',
-      }}>
-      {label}
-    </Text>
-  );
-}
-
-function VoteComponent() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '65%',
-        marginRight: '10%',
-      }}>
-      <SelectorComponent label={'1'} />
-
-      <SelectorComponent label={'2'} />
-    </View>
-  );
-}
-
-function SelectorComponent({label}) {
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '40%',
-        marginRight: '10%',
-      }}>
-      <Text
-        style={{
-          textAlign: 'center',
-          fontSize: 18,
-          color: 'black',
-          marginBottom: '3%',
-        }}>
-        {label}
-      </Text>
-      <RNPickerSelect
-        onValueChange={() => {}}
-        placeholder={{
-          label: '▽',
-          value: '',
-        }}
-        items={[
-          {label: 'Basketball', value: 'Basketball'},
-          {label: 'Badminton', value: 'Badminton'},
-          {label: 'Volleyball', value: 'Volleyball'},
-        ]}
-        style={{
-          inputIOS: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-            borderWidth: 1,
-            borderColor: 'blue',
-          },
-          inputAndroid: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-          },
-          placeholder: {
-            textAlign: 'center',
-            padding: '1%',
-            fontSize: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'black',
-          },
+      <Modals
+        {...{
+          showInfoModal,
+          showMonthPicker,
+          showVoteModal,
+          selectedYear,
+          setSelectedYear,
+          selectedMonth,
+          setSelectedMonth,
+          setShowInfoModal,
+          setShowMonthPicker,
+          setShowVoteModal,
         }}
       />
-    </View>
+    </>
+  );
+}
+
+function Modals({
+  showInfoModal,
+  setShowInfoModal,
+  showMonthPicker,
+  setShowMonthPicker,
+  showVoteModal,
+  setShowVoteModal,
+  selectedYear,
+  setSelectedYear,
+  selectedMonth,
+  setSelectedMonth,
+}) {
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
+  return (
+    <>
+      {showMonthPicker && (
+        <View className="bottom-[8%] z-auto w-full">
+          <MonthPicker
+            onChange={(event, newDate) => {
+              if (event === 'dateSetAction') {
+                if (newDate && newDate?.getFullYear() && newDate?.getMonth()) {
+                  setSelectedYear(newDate?.getFullYear());
+                  setSelectedMonth(newDate?.getMonth());
+                }
+              }
+              setShowMonthPicker(false);
+            }}
+            minimumDate={new Date(todayYear, todayMonth + 1)}
+            maximumDate={new Date(todayYear + 1, 0)}
+            value={new Date(selectedYear, selectedMonth)}
+            locale="ko"
+            mode="spinner"
+          />
+        </View>
+      )}
+      {showInfoModal && (
+        <InfoModal
+          {...{
+            showInfoModal,
+            setShowInfoModal,
+          }}
+        />
+      )}
+      {showVoteModal && (
+        <VoteModal
+          {...{
+            showVoteModal,
+            setShowVoteModal,
+          }}
+        />
+      )}
+    </>
   );
 }
