@@ -4,6 +4,7 @@ import Space from '../components/Space';
 import MonthPicker from 'react-native-month-year-picker';
 import APIManager from '../api';
 import Helper from '../helper';
+import {VoteResultModal} from '../components/VoteModal';
 
 export default function ResultPage() {
   const today = new Date();
@@ -14,6 +15,9 @@ export default function ResultPage() {
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showVoteResultModal, setShowVoteResultModal] = useState(false);
+
+  const [voteResult, setVoteResult] = useState(null);
+
   const fetchVoteResult = async () => {
     try {
       const userInfo = await Helper.getUserInfo();
@@ -22,18 +26,22 @@ export default function ResultPage() {
         return;
       }
       const response = await APIManager.getVotingResult(
-        // userInfo.grade,
-        'MS',
+        userInfo.grade,
+        // 'MS',
         selectedYear,
         selectedMonth,
       );
+      if (response.code !== 1000) {
+        Alert.alert('Something went wrong. Please try again later.');
+        return;
+      }
 
+      setVoteResult(response.result);
       console.log(response.result['Mon']);
     } catch (e) {
       console.log(e);
     }
   };
-  fetchVoteResult();
 
   return (
     <>
@@ -58,6 +66,7 @@ export default function ResultPage() {
           <TouchableOpacity
             className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
             onPress={() => {
+              fetchVoteResult();
               setShowVoteResultModal(true);
             }}>
             <Text className="text-center text-xl font-semibold text-white">
@@ -76,6 +85,7 @@ export default function ResultPage() {
           setSelectedMonth,
           setShowMonthPicker,
           setShowVoteResultModal,
+          voteResult,
         }}
       />
     </>
@@ -91,6 +101,7 @@ function Modals({
   setSelectedYear,
   selectedMonth,
   setSelectedMonth,
+  voteResult,
 }) {
   const today = new Date();
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -133,16 +144,17 @@ function Modals({
         </View>
       )}
 
-      {/* {showVoteResultModal && (
+      {showVoteResultModal && (
         <VoteResultModal
           {...{
             selectedYear,
             selectedMonth,
             showVoteResultModal,
             setShowVoteResultModal,
+            voteResult,
           }}
         />
-      )} */}
+      )}
     </>
   );
 }

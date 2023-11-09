@@ -13,6 +13,7 @@ import {DAYS_AVAILABLE, SPORTS_AVAILABLE} from './constants';
 import Dropdown from '../Dropdown';
 import APIManager from '../../api';
 import Helper from '../../helper';
+import LoadingComponent from '../Loading';
 const NONE_LABEL = 'None';
 
 export default function VoteModal({
@@ -186,6 +187,22 @@ function Header() {
   );
 }
 
+function ResultHeader() {
+  return (
+    <View className="flex flex-row items-center justify-between">
+      <Text className="w-[35%] text-center text-lg font-semibold text-red-900">
+        Day
+      </Text>
+      <Space size="w-[5%]" />
+      <View className="flex w-[60%] flex-row px-1">
+        <Text className="w-full text-center text-lg font-semibold text-purple-800">
+          Sport
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 function VoteSelector({label, onChange}) {
   const [firstSportsOptions, setFirstSportsOptions] = useState([
     ...SPORTS_AVAILABLE,
@@ -246,5 +263,72 @@ function SportSelector({availableSports, onChange}) {
     <View className="w-full">
       <Dropdown options={availableSports} setSelectedOption={onChange} />
     </View>
+  );
+}
+
+export function VoteResultModal({
+  selectedYear,
+  selectedMonth,
+  showVoteResultModal,
+  setShowVoteResultModal,
+  voteResult,
+}) {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (voteResult) {
+      setLoading(false);
+    }
+  }, [voteResult]);
+
+  return (
+    <Modal visible={showVoteResultModal} transparent animationType="slide">
+      <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFDD] px-6  py-8">
+        <View className="h-[90%]">
+          <Text className="h-[10%] text-center text-lg font-bold text-blue-700">
+            🗳️ Vote Result
+          </Text>
+          {loading && voteResult !== undefined ? (
+            <LoadingComponent />
+          ) : (
+            <>
+              <Space size="h-4" />
+              <ResultHeader />
+              <ScrollView className="h-3/4">
+                <Space size="h-5" />
+                {DAYS_AVAILABLE.map((day, index) => {
+                  return (
+                    <View key={index}>
+                      <View className="flex w-full flex-row items-center justify-center text-center">
+                        <View className="w-[35%]">
+                          <Text className="text-center">{day}</Text>
+                        </View>
+                        <Space size="w-[5%]" />
+                        <View className="w-[60%]">
+                          <Text className="text-center">
+                            {voteResult && voteResult[day]
+                              ? voteResult[day]['1'] ?? 'None'
+                              : 'None'}
+                          </Text>
+                        </View>
+                      </View>
+                      <Space size="h-5" />
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              setShowVoteResultModal(false);
+            }}>
+            <View className="flex flex-row">
+              <Space size="w-4" />
+              <Text className="text-center text-lg font-semibold">Close</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 }
