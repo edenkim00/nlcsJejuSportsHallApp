@@ -18,7 +18,6 @@ export default function LoginPage({navigation}) {
   useEffect(() => {
     const loginInfo = async () => {
       const loginInfoFromStorage = await Storage.get('sportshall_loginInfo');
-      console.log(loginInfoFromStorage, 'ds');
       setLoading(false);
       if (loginInfoFromStorage) {
         navigation.navigate('BottomTab');
@@ -26,7 +25,6 @@ export default function LoginPage({navigation}) {
       }
       setLoading(false);
     };
-    console.log('HERE?');
     setLoading(true);
     loginInfo();
   }, []);

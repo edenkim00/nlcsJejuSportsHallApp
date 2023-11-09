@@ -59,7 +59,6 @@ export default function Dropdown({
   buttonLabelStyle,
   dropdownStyle,
 }) {
-  console.log(options);
   return (
     <View className="w-full">
       <SelectDropdown

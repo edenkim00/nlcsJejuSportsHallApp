@@ -1,36 +1,45 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import Space from '../components/Space';
 import MonthPicker from 'react-native-month-year-picker';
-import InfoModal from '../components/InfoModal';
-import VoteModal from '../components/VoteModal';
+import APIManager from '../api';
+import Helper from '../helper';
 
-export default function HomePage() {
+export default function ResultPage() {
   const today = new Date();
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
   const [selectedYear, setSelectedYear] = useState(aWeekLater.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 2);
+  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 1);
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [showVoteModal, setShowVoteModal] = useState(false);
+  const [showVoteResultModal, setShowVoteResultModal] = useState(false);
+  const fetchVoteResult = async () => {
+    try {
+      const userInfo = await Helper.getUserInfo();
+      if (!userInfo?.grade) {
+        Alert.alert('Something went wrong. Please try again later.');
+        return;
+      }
+      const response = await APIManager.getVotingResult(
+        // userInfo.grade,
+        'MS',
+        selectedYear,
+        selectedMonth,
+      );
+
+      console.log(response.result['Mon']);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  fetchVoteResult();
+
   return (
     <>
       <View className="flex h-full w-full flex-col items-center justify-center">
-        <Space size="h-32" />
-        <View className="flex w-full flex-row justify-end">
-          <TouchableOpacity
-            className="right-[5%] flex flex-row items-center justify-center rounded-xl border border-green-300 px-5 py-4"
-            onPress={() => {
-              setShowInfoModal(true);
-            }}>
-            <View>
-              <Text className="text-center text-white">🗣️ Learning</Text>
-              <Text className="text-center text-white">Voting Polices</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <Space size="h-16" />
+        <Space size="h-48" />
+        <Space size="h-[9%]" />
         <Text className="text-xl font-semibold text-yellow-300">
           Year and Month
         </Text>
@@ -49,7 +58,7 @@ export default function HomePage() {
           <TouchableOpacity
             className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
             onPress={() => {
-              setShowVoteModal(true);
+              setShowVoteResultModal(true);
             }}>
             <Text className="text-center text-xl font-semibold text-white">
               Select Sports
@@ -59,16 +68,14 @@ export default function HomePage() {
       </View>
       <Modals
         {...{
-          showInfoModal,
           showMonthPicker,
-          showVoteModal,
+          showVoteResultModal,
           selectedYear,
           setSelectedYear,
           selectedMonth,
           setSelectedMonth,
-          setShowInfoModal,
           setShowMonthPicker,
-          setShowVoteModal,
+          setShowVoteResultModal,
         }}
       />
     </>
@@ -76,12 +83,10 @@ export default function HomePage() {
 }
 
 function Modals({
-  showInfoModal,
-  setShowInfoModal,
   showMonthPicker,
   setShowMonthPicker,
-  showVoteModal,
-  setShowVoteModal,
+  showVoteResultModal,
+  setShowVoteResultModal,
   selectedYear,
   setSelectedYear,
   selectedMonth,
@@ -91,7 +96,6 @@ function Modals({
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
   const year = aWeekLater.getFullYear();
   const month = aWeekLater.getMonth() + 1;
-
   return (
     <>
       {showMonthPicker && (
@@ -99,37 +103,46 @@ function Modals({
           <MonthPicker
             onChange={(event, newDate) => {
               if (event === 'dateSetAction') {
-                if (newDate && newDate?.getFullYear() && newDate?.getMonth()) {
+                if (
+                  newDate &&
+                  newDate?.getFullYear() &&
+                  newDate?.getMonth() !== undefined
+                ) {
+                  const today = new Date();
+                  const aWeekLater = new Date(
+                    today.getTime() + 7 * 24 * 60 * 60 * 1000,
+                  );
+                  aWeekLater.setMonth(aWeekLater.getMonth() - 1);
+                  if (aWeekLater.getTime() < newDate.getTime()) {
+                    Alert.alert('Not allowed');
+                    setShowMonthPicker(false);
+                    return;
+                  }
                   setSelectedYear(newDate?.getFullYear());
                   setSelectedMonth(newDate?.getMonth() + 1);
                 }
               }
               setShowMonthPicker(false);
             }}
-            minimumDate={new Date(year, month)}
-            maximumDate={new Date(year + 1, 12)}
+            minimumDate={new Date(2023, 0)}
+            maximumDate={new Date(year, month)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
             mode="spinner"
           />
         </View>
       )}
-      {showInfoModal && (
-        <InfoModal
+
+      {/* {showVoteResultModal && (
+        <VoteResultModal
           {...{
-            showInfoModal,
-            setShowInfoModal,
+            selectedYear,
+            selectedMonth,
+            showVoteResultModal,
+            setShowVoteResultModal,
           }}
         />
-      )}
-      {showVoteModal && (
-        <VoteModal
-          {...{
-            showVoteModal,
-            setShowVoteModal,
-          }}
-        />
-      )}
+      )} */}
     </>
   );
 }

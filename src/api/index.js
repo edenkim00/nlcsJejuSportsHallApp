@@ -74,7 +74,7 @@ export default class APIManager {
     );
   }
 
-  static async getVotingResult(grade, year, month, week) {
+  static async getVotingResult(grade, year, month) {
     return await APIRequestHelper.request(
       '/app/vote-result',
       'GET',
@@ -84,7 +84,6 @@ export default class APIManager {
         grade,
         year,
         month,
-        week,
       },
     );
   }
@@ -94,7 +93,6 @@ class APIRequestHelper {
   static async request(path, method, auth = false, payload, queryParams) {
     const myHeaders = new Headers();
     const URL = APIRequestHelper.generateRequestURL(path, queryParams);
-
     myHeaders.append('Content-Type', 'application/json');
     if (auth) {
       const jwtToken = await Storage.getAuth();

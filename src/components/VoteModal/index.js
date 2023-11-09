@@ -11,12 +11,19 @@ import {
 import Space from '../Space';
 import {DAYS_AVAILABLE, SPORTS_AVAILABLE} from './constants';
 import Dropdown from '../Dropdown';
-const NONELABEL = 'None';
+import APIManager from '../../api';
+import Helper from '../../helper';
+const NONE_LABEL = 'None';
 
-export default function VoteModal({showVoteModal, setShowVoteModal}) {
+export default function VoteModal({
+  showVoteModal,
+  setShowVoteModal,
+  selectedYear,
+  selectedMonth,
+}) {
   const [voteData, setVoteData] = useState(
     Object.fromEntries(
-      DAYS_AVAILABLE.map(day => [day, [NONELABEL, NONELABEL]]),
+      DAYS_AVAILABLE.map(day => [day, [NONE_LABEL, NONE_LABEL]]),
     ),
   );
   const onVoteSelectorChange = (key, value) => {
@@ -24,8 +31,6 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
   };
 
   function validateVoteData() {
-    console.log(voteData);
-
     return !DAYS_AVAILABLE.map(day => {
       return (
         voteData &&
@@ -62,10 +67,79 @@ export default function VoteModal({showVoteModal, setShowVoteModal}) {
 
         <View className="absolute bottom-2 right-6 flex h-[10%] flex-row">
           <TouchableOpacity
-            onPress={() => {
+            onPress={async () => {
               if (!validateVoteData()) {
                 Alert.alert('Invalid Vote Data', 'Please check your vote data');
                 return;
+              }
+              try {
+                const userInfo = await Helper.getUserInfo();
+                if (!userInfo?.graduationYear) {
+                  throw new Error('User info not found');
+                }
+
+                const response = await APIManager.vote({
+                  voteData,
+                  year: selectedYear,
+                  month: selectedMonth,
+                  graduationYear: userInfo?.graduationYear,
+                });
+                if (response?.code === 1000) {
+                  Alert.alert('Success', 'Your vote has been submitted');
+                } else if (response?.code === 5001) {
+                  Alert.alert(
+                    'Failed to submit vote',
+                    'You have already voted. Do you want to update your vote?',
+                    [
+                      {
+                        text: 'Yes',
+                        onPress: async () => {
+                          try {
+                            const newResponse = await APIManager.voteChange({
+                              voteData,
+                              year: selectedYear,
+                              month: selectedMonth,
+                              graduationYear: userInfo?.graduationYear,
+                            });
+                            if (newResponse.code === 1000) {
+                              Alert.alert(
+                                'Success',
+                                'Your vote has been updated',
+                              );
+                              return;
+                            } else {
+                              Alert.alert(
+                                'Failed to submit vote',
+                                'Something went wrong. Please try again later.',
+                              );
+                              return;
+                            }
+                          } catch (e) {
+                            Alert.alert(
+                              'Failed to submit vote',
+                              'Something went wrong. Please try again later.',
+                            );
+                            return;
+                          }
+                        },
+                      },
+                      {
+                        text: 'No',
+                        onPress: () => {},
+                      },
+                    ],
+                  );
+                } else {
+                  Alert.alert(
+                    'Failed to submit vote',
+                    'Something went wrong. Please try again later.',
+                  );
+                }
+              } catch (e) {
+                Alert.alert(
+                  'Failed to submit vote',
+                  'Something went wrong. Please try again later.',
+                );
               }
               setShowVoteModal(false);
             }}>
@@ -120,13 +194,13 @@ function VoteSelector({label, onChange}) {
     ...SPORTS_AVAILABLE,
   ]);
 
-  const [firstOption, setFirstOption] = useState(NONELABEL);
-  const [secondOption, setSecondOption] = useState(NONELABEL);
+  const [firstOption, setFirstOption] = useState(NONE_LABEL);
+  const [secondOption, setSecondOption] = useState(NONE_LABEL);
 
   useEffect(() => {
     setFirstSportsOptions([
       ...SPORTS_AVAILABLE.filter(
-        sport => sport !== secondOption && sport !== NONELABEL,
+        sport => sport !== secondOption && sport !== NONE_LABEL,
       ),
     ]);
     onChange(label, [firstOption, secondOption]);
@@ -135,7 +209,7 @@ function VoteSelector({label, onChange}) {
   useEffect(() => {
     setSecondSportsOptions([
       ...SPORTS_AVAILABLE.filter(
-        sport => sport !== firstOption && sport !== NONELABEL,
+        sport => sport !== firstOption && sport !== NONE_LABEL,
       ),
     ]);
 

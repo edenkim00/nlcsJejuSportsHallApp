@@ -8,8 +8,15 @@ import VoteModal from '../components/VoteModal';
 export default function HomePage() {
   const today = new Date();
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const [selectedYear, setSelectedYear] = useState(aWeekLater.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 2);
+  const defaultDate = new Date(
+    aWeekLater.getFullYear(),
+    aWeekLater.getMonth() + 1,
+  );
+
+  const [selectedYear, setSelectedYear] = useState(defaultDate.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(
+    defaultDate.getMonth() + 1,
+  );
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -18,7 +25,7 @@ export default function HomePage() {
     <>
       <View className="flex h-full w-full flex-col items-center justify-center">
         <Space size="h-32" />
-        <View className="flex w-full flex-row justify-end">
+        <View className="flex h-[9%] w-full flex-row justify-end">
           <TouchableOpacity
             className="right-[5%] flex flex-row items-center justify-center rounded-xl border border-green-300 px-5 py-4"
             onPress={() => {
@@ -99,7 +106,11 @@ function Modals({
           <MonthPicker
             onChange={(event, newDate) => {
               if (event === 'dateSetAction') {
-                if (newDate && newDate?.getFullYear() && newDate?.getMonth()) {
+                if (
+                  newDate &&
+                  newDate?.getFullYear() &&
+                  newDate?.getMonth() !== undefined
+                ) {
                   setSelectedYear(newDate?.getFullYear());
                   setSelectedMonth(newDate?.getMonth() + 1);
                 }
@@ -125,6 +136,8 @@ function Modals({
       {showVoteModal && (
         <VoteModal
           {...{
+            selectedYear,
+            selectedMonth,
             showVoteModal,
             setShowVoteModal,
           }}
