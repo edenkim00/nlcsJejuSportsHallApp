@@ -14,27 +14,29 @@ export default function InfoModal({showInfoModal, setShowInfoModal}) {
             <Space size="h-6" />
             <Space size="h-2" />
             <Text className="text-[14px]">
-              1. You can vote for sports court installation events on a weekly
-              basis.
+              1. You can vote for the court you want to play on a monthly basis.
             </Text>
             <Space size="h-2" />
             <Text className="text-[14px]">
-              2. There are 1 to 4 weeks per month, and the voting for the 5th
-              week is included in the 4th week.
+              2. The breakouts on Friday and Saturday are divided into two
+              sessions.
             </Text>
             <Space size="h-2" />
             <Text className="text-[14px]">
-              3. When selecting the month and week, you can vote for sports
-              events on a daily basis, ranking them from 1 to 3.
+              3. You can vote for up to 2 sports and your first option will be
+              weighed more than the second vote. If you do not select any of the
+              options, it will be considered as a null vote.
             </Text>
             <Space size="h-2" />
             <Text className="text-[14px]">
-              4. Voting sports include volleyball, basketball and badminton.
+              4. Voting sports include volleyball, basketball, badminton, and
+              netball.
             </Text>
             <Space size="h-2" />
             <Text className="text-[14px]">
-              5. The deadline for voting for the Nth month, M-1th week is until
-              the Mth week of the previous month.
+              5. The deadline for voting is 7 days before the month you are
+              voting for(e.g. voting for October closes on the 23rd of
+              September).
             </Text>
           </ScrollView>
         </View>
