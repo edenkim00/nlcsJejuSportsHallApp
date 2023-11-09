@@ -200,7 +200,7 @@ export default function SignUpPage({navigation}) {
                 </Text>
                 <Dropdown
                   options={['male', 'female']}
-                  setSelectedOption={setGraduationYear}
+                  setSelectedOption={setSex}
                   dropdownStyle={DROPDOWN_STYLE}
                   buttonStyle={DROPDOWN_STYLE}
                   buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}

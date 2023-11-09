@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import Space from '../components/Space';
 import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
 import VoteModal from '../components/VoteModal';
+import Helper from '../helper';
 
 export default function HomePage() {
   const today = new Date();
@@ -21,6 +22,21 @@ export default function HomePage() {
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState(false);
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    async function checkIsAdmin() {
+      const userInfo = await Helper.getUserInfo();
+      if (!userInfo) {
+        return;
+      }
+      if (userInfo?.userId === 1) {
+        setIsAdmin(true);
+      }
+    }
+    checkIsAdmin();
+  }, [isAdmin]);
+
   return (
     <>
       <View className="flex h-full w-full flex-col items-center justify-center">
@@ -76,6 +92,7 @@ export default function HomePage() {
           setShowInfoModal,
           setShowMonthPicker,
           setShowVoteModal,
+          isAdmin,
         }}
       />
     </>
@@ -93,6 +110,7 @@ function Modals({
   setSelectedYear,
   selectedMonth,
   setSelectedMonth,
+  isAdmin,
 }) {
   const today = new Date();
   const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -117,7 +135,9 @@ function Modals({
               }
               setShowMonthPicker(false);
             }}
-            minimumDate={new Date(year, month)}
+            minimumDate={
+              isAdmin ? new Date(year - 1, month) : new Date(year, month)
+            }
             maximumDate={new Date(year + 1, 12)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
@@ -140,6 +160,7 @@ function Modals({
             selectedMonth,
             showVoteModal,
             setShowVoteModal,
+            isAdmin,
           }}
         />
       )}

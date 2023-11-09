@@ -31,12 +31,21 @@ export default function ResultPage() {
         selectedYear,
         selectedMonth,
       );
+      console.log(response);
       if (response.code !== 1000) {
+        if (response.code === 8003) {
+          Alert.alert(
+            "Admin don't confirm the voting result yet. Please contact to admin.",
+          );
+          return;
+        }
         Alert.alert('Something went wrong. Please try again later.');
         return;
       }
 
       setVoteResult(response.result);
+      setShowVoteResultModal(true);
+
       console.log(response.result['Mon']);
     } catch (e) {
       console.log(e);
@@ -67,10 +76,9 @@ export default function ResultPage() {
             className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
             onPress={() => {
               fetchVoteResult();
-              setShowVoteResultModal(true);
             }}>
             <Text className="text-center text-xl font-semibold text-white">
-              Select Sports
+              Check Results
             </Text>
           </TouchableOpacity>
         </View>

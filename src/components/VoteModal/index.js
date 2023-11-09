@@ -21,6 +21,7 @@ export default function VoteModal({
   setShowVoteModal,
   selectedYear,
   selectedMonth,
+  isAdmin,
 }) {
   const [voteData, setVoteData] = useState(
     Object.fromEntries(
@@ -32,6 +33,16 @@ export default function VoteModal({
   };
 
   function validateVoteData() {
+    if (isAdmin) {
+      return !DAYS_AVAILABLE.map(day => {
+        return (
+          voteData &&
+          voteData[day] &&
+          voteData[day].length &&
+          [...SPORTS_AVAILABLE].includes(voteData[day][0])
+        );
+      }).some(x => !x);
+    }
     return !DAYS_AVAILABLE.map(day => {
       return (
         voteData &&
@@ -52,13 +63,20 @@ export default function VoteModal({
             🗳️ Vote for Sports
           </Text>
           <Space size="h-4" />
-          <Header />
+          {isAdmin ? <AdminHeader /> : <Header />}
           <ScrollView className="h-3/4">
             <Space size="h-5" />
             {DAYS_AVAILABLE.map((day, index) => {
               return (
                 <View key={index}>
-                  <VoteSelector label={day} onChange={onVoteSelectorChange} />
+                  {isAdmin ? (
+                    <AdminSelector
+                      label={day}
+                      onChange={onVoteSelectorChange}
+                    />
+                  ) : (
+                    <VoteSelector label={day} onChange={onVoteSelectorChange} />
+                  )}
                   <Space size="h-3" />
                 </View>
               );
@@ -78,6 +96,7 @@ export default function VoteModal({
                 if (!userInfo?.graduationYear) {
                   throw new Error('User info not found');
                 }
+                console.log('voteData', voteData);
 
                 const response = await APIManager.vote({
                   voteData,
@@ -85,6 +104,7 @@ export default function VoteModal({
                   month: selectedMonth,
                   graduationYear: userInfo?.graduationYear,
                 });
+                console.log('response', response);
                 if (response?.code === 1000) {
                   Alert.alert('Success', 'Your vote has been submitted');
                 } else if (response?.code === 5001) {
@@ -164,6 +184,22 @@ export default function VoteModal({
         </View>
       </View>
     </Modal>
+  );
+}
+
+function AdminHeader() {
+  return (
+    <View className="flex flex-row items-center justify-between">
+      <Text className="w-[30%] text-center text-lg font-semibold text-red-900">
+        Day
+      </Text>
+      <Space size="w-[5%]" />
+      <View className="flex w-[65%] flex-row px-1">
+        <Text className="w-full text-center text-lg font-semibold text-purple-800">
+          Sport
+        </Text>
+      </View>
+    </View>
   );
 }
 
@@ -258,6 +294,33 @@ function VoteSelector({label, onChange}) {
   );
 }
 
+function AdminSelector({label, onChange}) {
+  const [firstSportsOptions, setFirstSportsOptions] = useState([
+    ...SPORTS_AVAILABLE,
+  ]);
+
+  const [firstOption, setFirstOption] = useState(NONE_LABEL);
+
+  useEffect(() => {
+    onChange(label, [firstOption]);
+  }, [firstOption]);
+
+  return (
+    <View className="flex flex-row items-center justify-between">
+      <Text className="w-[30%] text-center font-semibold text-green-800">
+        {label}
+      </Text>
+      <Space size="w-[5%]" />
+      <View className="flex w-[65%] flex-row px-1">
+        <SportSelector
+          availableSports={firstSportsOptions}
+          onChange={setFirstOption}
+        />
+      </View>
+    </View>
+  );
+}
+
 function SportSelector({availableSports, onChange}) {
   return (
     <View className="w-full">
@@ -282,10 +345,13 @@ export function VoteResultModal({
 
   return (
     <Modal visible={showVoteResultModal} transparent animationType="slide">
-      <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFDD] px-6  py-8">
-        <View className="h-[90%]">
+      <View className="absolute bottom-1/4 left-[12.5%] h-1/2 w-3/4 rounded-xl bg-[#FFFFFFDD] px-6 pt-8">
+        <View className="h-[90%] pb-2">
           <Text className="h-[10%] text-center text-lg font-bold text-blue-700">
             🗳️ Vote Result
+          </Text>
+          <Text className="text-center font-bold text-green-600">
+            {selectedYear} - {selectedMonth}
           </Text>
           {loading && voteResult !== undefined ? (
             <LoadingComponent />
@@ -305,9 +371,7 @@ export function VoteResultModal({
                         <Space size="w-[5%]" />
                         <View className="w-[60%]">
                           <Text className="text-center">
-                            {voteResult && voteResult[day]
-                              ? voteResult[day]['1'] ?? 'None'
-                              : 'None'}
+                            {voteResult[day]?.['1']}
                           </Text>
                         </View>
                       </View>
@@ -318,16 +382,18 @@ export function VoteResultModal({
               </ScrollView>
             </>
           )}
-          <TouchableOpacity
-            onPress={() => {
-              setShowVoteResultModal(false);
-            }}>
-            <View className="flex flex-row">
-              <Space size="w-4" />
-              <Text className="text-center text-lg font-semibold">Close</Text>
-            </View>
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          onPress={() => {
+            setShowVoteResultModal(false);
+          }}>
+          <View className="flex flex-row items-end justify-end pb-8">
+            <Space size="w-4" />
+            <Text className="text-center text-lg font-semibold text-green-900">
+              Close
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </Modal>
   );
