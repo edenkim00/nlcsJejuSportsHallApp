@@ -1,344 +1,161 @@
-// import React, {useState} from 'react';
-// import {
-//   Alert,
-//   TouchableOpacity,
-//   ImageBackground,
-//   View,
-//   Text,
-//   Modal,
-//   ScrollView,
-// } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, Alert} from 'react-native';
+import Space from '../components/Space';
+import MonthPicker from 'react-native-month-year-picker';
+import APIManager from '../api';
+import Helper from '../helper';
+import {VoteResultModal} from '../components/VoteModal';
 
-// import {styles, resultPageStyles, modalStyles} from '../styles/styles';
-// import RNPickerSelect from 'react-native-picker-select';
-// import MonthPicker from 'react-native-month-year-picker';
-// import {ACTION_DATE_SET} from 'react-native-month-year-picker';
-// import moment from 'moment';
+export default function ResultPage() {
+  const today = new Date();
+  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-// import APIManager from '../api';
-// import {months, dayToString} from '../lib/constants';
+  const [selectedYear, setSelectedYear] = useState(aWeekLater.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 1);
 
-// function ResultComponent() {
-//   const today = new Date();
-//   const todayDay = parseInt(today.getDate());
-//   const todayWeek = Math.min(parseInt((todayDay - 1) / 7) + 1, 4);
-//   const fullWeekList = [
-//     {label: 'Week 1', value: 1},
-//     {label: 'Week 2', value: 2},
-//     {label: 'Week 3', value: 3},
-//     {label: 'Week 4', value: 4},
-//   ];
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showVoteResultModal, setShowVoteResultModal] = useState(false);
 
-//   const [year, setYear] = useState(String(today.getFullYear()));
-//   const [month, setMonth] = useState(String(today.getMonth() + 1));
-//   const [week, setWeek] = useState('0');
-//   const [date, setDate] = useState(
-//     new Date(parseInt(year), parseInt(month) - 1),
-//   );
-//   const [dateList, setDateList] = useState([]);
-//   const [selectedGrade, setSelectedGrade] = useState('');
-//   const [weekSelectorShow, setWeekSelectorShow] = useState(false);
-//   const [showResultModal, setShowResultModal] = useState(false);
-//   const [weekList, setWeekList] = useState(
-//     year == today.getFullYear() && month == today.getMonth() + 2
-//       ? fullWeekList.slice(0, todayWeek)
-//       : fullWeekList,
-//   );
-//   const [resultData, setResultData] = useState({});
+  const [voteResult, setVoteResult] = useState(null);
+  //TODO:
+  const fetchVoteResult = async () => {
+    try {
+      const userInfo = await Helper.getUserInfo();
+      if (!userInfo?.grade) {
+        Alert.alert('Something went wrong. Please try again later.');
+        return;
+      }
+      const response = await APIManager.getVotingResult(
+        userInfo.grade,
+        selectedYear,
+        selectedMonth,
+      );
+      if (response.code !== 1000) {
+        if (response.code === 8003) {
+          Alert.alert(
+            "Admin don't confirm the voting result yet. Please contact to admin.",
+          );
+          return;
+        }
+        Alert.alert('Something went wrong. Please try again later.');
+        return;
+      }
 
-//   const handleModalOpen = async () => {
-//     if (!(week > '0')) {
-//       Alert.alert('Please select week.');
-//       return;
-//     }
-//     if (selectedGrade == '') {
-//       Alert.alert('Please select grade.');
-//       return;
-//     }
-//     setDateList(getDateRanges(year, month, week).dateList);
-//     const apiResult = await APIManager.getVotingResult(
-//       selectedGrade,
-//       year,
-//       month,
-//       week,
-//     );
-//     if (apiResult.code == 6002 || apiResult.code == 6001) {
-//       Alert.alert('The voting is still in progress.');
-//       return;
-//     }
-//     if (apiResult.code != 1000) {
-//       Alert.alert('Please try again later.');
-//       return;
-//     }
-//     setResultData(apiResult.result);
-//     setShowResultModal(true);
-//   };
+      setVoteResult(response.result);
+      setShowVoteResultModal(true);
 
-//   return (
-//     <ImageBackground
-//       source={require('../../assets/backgrounds.jpg')}
-//       style={styles.bottomTabContainer}>
-//       <Text style={styles.title1}>Sports Hall</Text>
-//       <Text style={styles.title2}>VOTING SYSTEM</Text>
-//       <Text style={styles.title3}>@NLCS JEJU</Text>
-//       <Text style={resultPageStyles.label}>Grade</Text>
-//       <View style={resultPageStyles.week}>
-//         <RNPickerSelect
-//           title=""
-//           onValueChange={value => setSelectedGrade(value)}
-//           placeholder={{
-//             label: 'Grade ▽',
-//             value: '',
-//           }}
-//           items={[
-//             {label: 'MS', value: 'MS'},
-//             {label: 'HS', value: 'HS'},
-//           ]}
-//           style={{
-//             inputIOS: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//             inputAndroid: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//             placeholder: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//           }}
-//         />
-//       </View>
-//       <Text style={resultPageStyles.label}>Year and Month</Text>
-//       <TouchableOpacity
-//         style={resultPageStyles.year_and_month}
-//         onPress={() => setWeekSelectorShow(true)}>
-//         <View>
-//           <Text style={{color: 'white', fontSize: 15, textAlign: 'center'}}>
-//             {new Date(date.valueOf() + 9 * 60 * 60 * 1000)
-//               .toISOString()
-//               .substring(0, 7)}{' '}
-//             ▽
-//           </Text>
-//         </View>
-//       </TouchableOpacity>
-//       <Text style={resultPageStyles.label}>Week</Text>
-//       <View style={resultPageStyles.week}>
-//         <RNPickerSelect
-//           title=""
-//           onValueChange={value => setWeek(String(value))}
-//           placeholder={{
-//             label: 'Week ▽',
-//             value: 0,
-//           }}
-//           items={weekList}
-//           style={{
-//             inputIOS: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//             inputAndroid: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//             placeholder: {
-//               textAlign: 'center',
-//               color: '#FFFFFF',
-//               fontSize: 15,
-//               padding: '3%',
-//             },
-//           }}
-//         />
-//       </View>
-//       {weekSelectorShow && (
-//         <MonthPicker
-//           onChange={(event, date) => {
-//             if (event == ACTION_DATE_SET) {
-//               setDate(date);
-//               setMonth(String(date.getMonth() + 1));
-//               setYear(String(date.getFullYear()));
-//               setWeekList(
-//                 date.getFullYear() == today.getFullYear() &&
-//                   date.getMonth() + 1 == today.getMonth() + 2
-//                   ? fullWeekList.slice(0, todayWeek)
-//                   : fullWeekList,
-//               );
-//             }
-//             setWeekSelectorShow(false);
-//           }}
-//           value={date}
-//           minimumDate={new Date(2023, 0)}
-//           maximumDate={new Date(today.getFullYear(), today.getMonth() + 1)}
-//           locale="ko"
-//         />
-//       )}
-//       <TouchableOpacity
-//         style={resultPageStyles.button}
-//         onPress={handleModalOpen}>
-//         <Text
-//           style={{
-//             color: 'white',
-//             fontSize: 18,
-//             textAlign: 'center',
-//             padding: '3%',
-//           }}>
-//           Check Voting Results
-//         </Text>
-//       </TouchableOpacity>
-//       <ResultModal
-//         visible={showResultModal}
-//         setClose={() => {
-//           setShowResultModal(false);
-//         }}
-//         year={year}
-//         month={month}
-//         week={week}
-//         dateList={dateList}
-//         resultData={resultData}
-//       />
-//     </ImageBackground>
-//   );
-// }
+      console.log(response.result['Mon']);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-// export default ResultComponent;
+  return (
+    <>
+      <View className="flex h-full w-full flex-col items-center justify-center">
+        <Space size="h-48" />
+        <Space size="h-[9%]" />
+        <Text className="text-xl font-semibold text-yellow-300">
+          Year and Month
+        </Text>
+        <Space size="h-4" />
+        <TouchableOpacity
+          className="flex w-3/4 flex-row justify-center border border-white px-8 py-2 shadow-2xl shadow-yellow-100"
+          onPress={() => {
+            setShowMonthPicker(true);
+          }}>
+          <Text className="text-center text-lg font-semibold text-white">
+            {selectedYear}-{selectedMonth} ▽
+          </Text>
+        </TouchableOpacity>
+        <Space size="h-4" />
+        <View className="absolute bottom-[15%] left-[20%] flex w-full flex-row">
+          <TouchableOpacity
+            className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
+            onPress={() => {
+              fetchVoteResult();
+            }}>
+            <Text className="text-center text-xl font-semibold text-white">
+              Check Results
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Modals
+        {...{
+          showMonthPicker,
+          showVoteResultModal,
+          selectedYear,
+          setSelectedYear,
+          selectedMonth,
+          setSelectedMonth,
+          setShowMonthPicker,
+          setShowVoteResultModal,
+          voteResult,
+        }}
+      />
+    </>
+  );
+}
 
-// const ResultModal = ({
-//   visible,
-//   setClose,
-//   year,
-//   month,
-//   week,
-//   dateList,
-//   resultData,
-// }) => {
-//   return (
-//     <Modal visible={visible} transparent animationType="slide">
-//       <View style={modalStyles.modalOverlay}>
-//         <View style={modalStyles.voteResultModal}>
-//           <Text
-//             style={{
-//               textAlign: 'center',
-//               fontSize: 20,
-//               color: 'black',
-//               marginBottom: '5%',
-//             }}>
-//             Voting Results
-//           </Text>
-//           <Text
-//             style={{
-//               textAlign: 'center',
-//               fontSize: 15,
-//               color: 'black',
-//               marginBottom: '5%',
-//             }}>
-//             {months[parseInt(month) - 1]} {year} (Week {week})
-//           </Text>
-//           <View style={modalStyles.divider}></View>
-//           <ScrollView contentContainerStyle={modalStyles.scrollViewContent}>
-//             {dateList.map((dateString, i) => {
-//               return (
-//                 <View key={i}>
-//                   <DayResult
-//                     dateString={dateString}
-//                     sports={resultData[dateString]?.sports ?? '정보 없음'}
-//                   />
-//                   <View style={modalStyles.divider}></View>
-//                 </View>
-//               );
-//             })}
-//           </ScrollView>
-//           <View style={modalStyles.divider}></View>
-//           <TouchableOpacity style={modalStyles.closeButton} onPress={setClose}>
-//             <Text style={modalStyles.closeButtonText}>Close</Text>
-//           </TouchableOpacity>
-//         </View>
-//       </View>
-//     </Modal>
-//   );
-// };
+function Modals({
+  showMonthPicker,
+  setShowMonthPicker,
+  showVoteResultModal,
+  setShowVoteResultModal,
+  selectedYear,
+  setSelectedYear,
+  selectedMonth,
+  setSelectedMonth,
+  voteResult,
+}) {
+  const today = new Date();
+  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const year = aWeekLater.getFullYear();
+  const month = aWeekLater.getMonth() + 1;
+  return (
+    <>
+      {showMonthPicker && (
+        <View className="bottom-[8%] z-auto w-full">
+          <MonthPicker
+            onChange={(event, newDate) => {
+              if (event === 'dateSetAction') {
+                if (
+                  newDate &&
+                  newDate?.getFullYear() &&
+                  newDate?.getMonth() !== undefined
+                ) {
+                  if (Date.now() <= newDate.getTime()) {
+                    Alert.alert('Not allowed');
+                    setShowMonthPicker(false);
+                    return;
+                  }
+                  setSelectedYear(newDate?.getFullYear());
+                  setSelectedMonth(newDate?.getMonth() + 1);
+                }
+              }
+              setShowMonthPicker(false);
+            }}
+            minimumDate={new Date(2023, 0)}
+            // maximumDate={new Date(year, month)}
+            value={new Date(selectedYear, selectedMonth)}
+            locale="ko"
+            mode="spinner"
+          />
+        </View>
+      )}
 
-// const DayResult = ({dateString, sports}) => {
-//   const date = new Date(dateString);
-//   const day = dayToString[date.getDay()];
-//   return (
-//     <View>
-//       <View
-//         style={{
-//           flexDirection: 'row',
-//           justifyContent: 'space-between',
-//           alignItems: 'center',
-//           marginVertical: '5%',
-//         }}>
-//         <View style={{alignItems: 'center', width: '30%'}}>
-//           <Text style={{textAlign: 'center'}}>
-//             {months[date.getMonth()]} {date.getDate()}
-//           </Text>
-//           <Text style={{textAlign: 'center', color: 'purple'}}>({day})</Text>
-//         </View>
-//         <View style={{alignItems: 'center', width: '40%'}}>
-//           <Text
-//             style={{
-//               textAlign: 'center',
-//               color: getColorOfSports(sports),
-//               fontSize: 18,
-//             }}>
-//             {sports}
-//           </Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// };
-
-// const getColorOfSports = sports => {
-//   if (!sports) return 'black';
-//   if (sports == 'Basketball') return 'darkred';
-//   if (sports == 'Volleyball') return 'darkgreen';
-//   if (sports == 'Badminton') return 'darkblue';
-//   return 'black';
-// };
-
-// function getDateRanges(year, month, week) {
-//   const paddedMonth = month.padStart(2, '0'); // 3 -> 03, 12 -> 12
-//   let startDate, endDate;
-//   if (week == '4') {
-//     startDate = moment(`${year}-${paddedMonth}`)
-//       .startOf('month')
-//       .add(week - 1, 'week');
-//     endDate = moment(`${year}-${paddedMonth}`).endOf('month');
-//   } else {
-//     startDate = moment(`${year}-${paddedMonth}`)
-//       .startOf('month')
-//       .add(week - 1, 'week');
-//     endDate = moment(`${year}-${paddedMonth}`)
-//       .startOf('month')
-//       .add(week, 'week')
-//       .subtract(1, 'day');
-//   }
-//   return {
-//     startDate: startDate.format('YYYY-MM-DD'),
-//     endDate: endDate.format('YYYY-MM-DD'),
-//     dateList: _getWeekDateList(startDate, endDate),
-//   };
-// }
-
-// function _getWeekDateList(startDate, endDate) {
-//   const dateList = [];
-//   let currentDate = startDate;
-//   while (currentDate <= endDate) {
-//     dateList.push(currentDate.format('YYYY-MM-DD'));
-//     currentDate = currentDate.clone().add(1, 'd');
-//   }
-//   return dateList;
-// }
+      {showVoteResultModal && (
+        <VoteResultModal
+          {...{
+            selectedYear,
+            selectedMonth,
+            showVoteResultModal,
+            setShowVoteResultModal,
+            voteResult,
+          }}
+        />
+      )}
+    </>
+  );
+}

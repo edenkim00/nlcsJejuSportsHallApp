@@ -4,9 +4,6 @@ import LoginPage from './src/pages/LoginPage';
 import BottomTab from './src/Navigation';
 import SignUpPage from './src/pages/SignUpPage';
 import PasswordPage from './src/pages/PasswordPage';
-// import PasswordPage2 from './src/pages/PasswordPage2';
-
-import HelloReactNativePage from './src/pages/HelloReactNative';
 
 const AppNavigator = createStackNavigator(
   {
@@ -33,19 +30,6 @@ const AppNavigator = createStackNavigator(
       screen: BottomTab,
       navigationOptions: {
         title: 'Vote Application',
-      },
-    },
-
-    MyPage: {
-      screen: HelloReactNativePage,
-      navigationOptions: {
-        title: 'My Page',
-      },
-    },
-    HelloReactNative: {
-      screen: HelloReactNativePage,
-      navigationOptions: {
-        title: 'Hello React Native',
       },
     },
   },

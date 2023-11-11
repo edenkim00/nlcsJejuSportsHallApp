@@ -135,7 +135,7 @@ export default function VoteModal({
                   graduationYear: userInfo?.graduationYear,
                   gradeSelectedByAdmin: selectedGrade,
                 });
-                console.log('response', response);
+
                 if (response?.code === 1000) {
                   Alert.alert('Success', 'Your vote has been submitted');
                 } else if (response?.code === 5001) {
@@ -152,7 +152,9 @@ export default function VoteModal({
                               year: selectedYear,
                               month: selectedMonth,
                               graduationYear: userInfo?.graduationYear,
+                              gradeSelectedByAdmin: selectedGrade,
                             });
+                            console.log(newResponse);
                             if (newResponse.code === 1000) {
                               Alert.alert(
                                 'Success',

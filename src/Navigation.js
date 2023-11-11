@@ -5,7 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import HomeComponent from './pages/HomePage';
-import ResultComponent from './pages/HelloReactNative';
+import ResultComponent from './pages/Result';
 import MypageComponent from './pages/MyPage';
 const Tab = createBottomTabNavigator();
 const TABBAR_OPTION = {
@@ -58,28 +58,6 @@ function MyTabs({navigation}) {
           component={withContainer(ResultComponent)}
           options={TABBAR_OPTION}
         />
-        {/*
-        <Tab.Screen
-          name="Result"
-          component={ResultComponent}
-          options={{
-            headerShown: false,
-            tabBarStyle: {
-              height: '10%',
-              paddingHorizontal: '1%',
-              paddingVertical: '1%',
-              backgroundColor: '#303030',
-              position: 'absolute',
-              bottom: 0,
-              borderTopWidth: 0,
-            },
-            tabBarLabelStyle: {
-              fontSize: 12,
-              color: '#FFFFFF',
-              marginBottom: '3.5%',
-            },
-          }}
-        /> */}
         <Tab.Screen
           name="MyPage"
           component={withContainer(MypageComponent)}
