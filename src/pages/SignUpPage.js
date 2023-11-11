@@ -196,7 +196,7 @@ export default function SignUpPage({navigation}) {
               <Space size="w-[4%]" />
               <View className="flex w-[48%]">
                 <Text className="mb-1 text-center text-lg font-semibold text-yellow-400">
-                  Sex
+                  Gender
                 </Text>
                 <Dropdown
                   options={['male', 'female']}
