@@ -9,13 +9,18 @@ import {
   ScrollView,
 } from 'react-native';
 import Space from '../Space';
-import {DAYS_AVAILABLE, SPORTS_AVAILABLE} from './constants';
+import {
+  DAYS_AVAILABLE,
+  SPORTS_AVAILABLE,
+  DROPDOWN_BUTTON_TEXT_STYLE,
+  DROPDOWN_STYLE,
+} from './constants';
 import Dropdown from '../Dropdown';
 import APIManager from '../../api';
 import Helper from '../../helper';
 import LoadingComponent from '../Loading';
-const NONE_LABEL = 'None';
 
+const NONE_LABEL = 'None';
 export default function VoteModal({
   showVoteModal,
   setShowVoteModal,
@@ -28,12 +33,17 @@ export default function VoteModal({
       DAYS_AVAILABLE.map(day => [day, [NONE_LABEL, NONE_LABEL]]),
     ),
   );
+
+  const [selectedGrade, setSelectedGrade] = useState();
   const onVoteSelectorChange = (key, value) => {
     setVoteData({...voteData, [key]: value});
   };
 
   function validateVoteData() {
     if (isAdmin) {
+      if (!selectedGrade) {
+        return false;
+      }
       return !DAYS_AVAILABLE.map(day => {
         return (
           voteData &&
@@ -63,7 +73,27 @@ export default function VoteModal({
             🗳️ Vote for Sports
           </Text>
           <Space size="h-4" />
-          {isAdmin ? <AdminHeader /> : <Header />}
+
+          {isAdmin ? (
+            <View className="flex flex-col w-full justify-centers items-center">
+              <View className="flex w-[80%] flex-col">
+                <Text className="mb-1 text-center text-lg font-semibold text-purple-800">
+                  Grade
+                </Text>
+                <Dropdown
+                  options={['MS', 'HS']}
+                  setSelectedOption={setSelectedGrade}
+                  dropdownStyle={DROPDOWN_STYLE}
+                  buttonStyle={DROPDOWN_STYLE}
+                  buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}
+                />
+              </View>
+              <Space size="h-8" />
+              <AdminHeader />
+            </View>
+          ) : (
+            <Header />
+          )}
           <ScrollView className="h-3/4">
             <Space size="h-5" />
             {DAYS_AVAILABLE.map((day, index) => {
@@ -103,6 +133,7 @@ export default function VoteModal({
                   year: selectedYear,
                   month: selectedMonth,
                   graduationYear: userInfo?.graduationYear,
+                  gradeSelectedByAdmin: selectedGrade,
                 });
                 console.log('response', response);
                 if (response?.code === 1000) {

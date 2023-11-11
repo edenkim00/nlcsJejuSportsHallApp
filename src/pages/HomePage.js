@@ -136,9 +136,9 @@ function Modals({
               setShowMonthPicker(false);
             }}
             minimumDate={
-              isAdmin ? new Date(year - 1, month) : new Date(year, month)
+              isAdmin ? new Date(year - 1, month + 1) : new Date(year, month)
             }
-            maximumDate={new Date(year + 1, 12)}
+            maximumDate={new Date(year + 2, 12)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
             mode="spinner"

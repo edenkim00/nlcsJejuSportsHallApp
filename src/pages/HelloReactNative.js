@@ -17,7 +17,7 @@ export default function ResultPage() {
   const [showVoteResultModal, setShowVoteResultModal] = useState(false);
 
   const [voteResult, setVoteResult] = useState(null);
-
+  //TODO:
   const fetchVoteResult = async () => {
     try {
       const userInfo = await Helper.getUserInfo();
@@ -27,11 +27,9 @@ export default function ResultPage() {
       }
       const response = await APIManager.getVotingResult(
         userInfo.grade,
-        // 'MS',
         selectedYear,
         selectedMonth,
       );
-      console.log(response);
       if (response.code !== 1000) {
         if (response.code === 8003) {
           Alert.alert(
@@ -127,12 +125,7 @@ function Modals({
                   newDate?.getFullYear() &&
                   newDate?.getMonth() !== undefined
                 ) {
-                  const today = new Date();
-                  const aWeekLater = new Date(
-                    today.getTime() + 7 * 24 * 60 * 60 * 1000,
-                  );
-                  aWeekLater.setMonth(aWeekLater.getMonth() - 1);
-                  if (aWeekLater.getTime() < newDate.getTime()) {
+                  if (Date.now() <= newDate.getTime()) {
                     Alert.alert('Not allowed');
                     setShowMonthPicker(false);
                     return;
@@ -144,7 +137,7 @@ function Modals({
               setShowMonthPicker(false);
             }}
             minimumDate={new Date(2023, 0)}
-            maximumDate={new Date(year, month)}
+            // maximumDate={new Date(year, month)}
             value={new Date(selectedYear, selectedMonth)}
             locale="ko"
             mode="spinner"
