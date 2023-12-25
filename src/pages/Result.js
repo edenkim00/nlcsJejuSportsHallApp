@@ -8,16 +8,13 @@ import {VoteResultModal} from '../components/VoteModal';
 
 export default function ResultPage() {
   const today = new Date();
-  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  const [selectedYear, setSelectedYear] = useState(aWeekLater.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(aWeekLater.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
 
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showVoteResultModal, setShowVoteResultModal] = useState(false);
 
   const [voteResult, setVoteResult] = useState(null);
-  //TODO:
   const fetchVoteResult = async () => {
     try {
       const userInfo = await Helper.getUserInfo();
@@ -43,8 +40,6 @@ export default function ResultPage() {
 
       setVoteResult(response.result);
       setShowVoteResultModal(true);
-
-      console.log(response.result['Mon']);
     } catch (e) {
       console.log(e);
     }
@@ -109,23 +104,20 @@ function Modals({
   setSelectedMonth,
   voteResult,
 }) {
-  const today = new Date();
-  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const year = aWeekLater.getFullYear();
-  const month = aWeekLater.getMonth() + 1;
   return (
     <>
       {showMonthPicker && (
         <View className="bottom-[8%] z-auto w-full">
           <MonthPicker
             onChange={(event, newDate) => {
+              setShowMonthPicker(false);
               if (event === 'dateSetAction') {
                 if (
                   newDate &&
                   newDate?.getFullYear() &&
                   newDate?.getMonth() !== undefined
                 ) {
-                  if (Date.now() <= newDate.getTime()) {
+                  if (Date.now() < newDate.getTime()) {
                     Alert.alert('Not allowed');
                     setShowMonthPicker(false);
                     return;
@@ -134,7 +126,6 @@ function Modals({
                   setSelectedMonth(newDate?.getMonth() + 1);
                 }
               }
-              setShowMonthPicker(false);
             }}
             minimumDate={new Date(2023, 0)}
             // maximumDate={new Date(year, month)}

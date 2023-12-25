@@ -126,7 +126,6 @@ export default function VoteModal({
                 if (!userInfo?.graduationYear) {
                   throw new Error('User info not found');
                 }
-                console.log('voteData', voteData);
 
                 const response = await APIManager.vote({
                   voteData,
@@ -154,7 +153,7 @@ export default function VoteModal({
                               graduationYear: userInfo?.graduationYear,
                               gradeSelectedByAdmin: selectedGrade,
                             });
-                            console.log(newResponse);
+
                             if (newResponse.code === 1000) {
                               Alert.alert(
                                 'Success',

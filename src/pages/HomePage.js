@@ -123,6 +123,7 @@ function Modals({
         <View className="bottom-[8%] z-auto w-full">
           <MonthPicker
             onChange={(event, newDate) => {
+              setShowMonthPicker(false);
               if (event === 'dateSetAction') {
                 if (
                   newDate &&
@@ -133,13 +134,13 @@ function Modals({
                   setSelectedMonth(newDate?.getMonth() + 1);
                 }
               }
-              setShowMonthPicker(false);
             }}
             minimumDate={
               isAdmin ? new Date(year - 1, month + 1) : new Date(year, month)
             }
             maximumDate={new Date(year + 2, 12)}
             value={new Date(selectedYear, selectedMonth)}
+            open={showMonthPicker}
             locale="ko"
             mode="spinner"
           />
