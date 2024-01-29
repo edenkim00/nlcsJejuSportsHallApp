@@ -22,25 +22,29 @@ export default function MyPage(props) {
   useEffect(() => {
     const fetchUserInfo = async () => {
       setLoading(true);
-
       const userInfoFromHelper = await Helper.getUserInfo();
+
       if (!userInfoFromHelper) {
+        Alert.alert('Failed to fetch user info.');
+        handleMoveToLogin();
         return;
       }
       if (userInfoFromHelper?.userId === 1) {
         setIsAdmin(true);
       }
       setUserInfo(userInfoFromHelper);
-      setLoading(false);
+      // setLoading(false);
     };
     fetchUserInfo();
-  }, []);
+  }, [handleMoveToLogin]);
 
   return (
     <>
       <View className="flex flex-col items-center justify-center">
         {loading ? (
-          <LoadingComponent />
+          <>
+            <LoadingComponent />
+          </>
         ) : (
           <View className="flex h-full flex-col items-center justify-center">
             <Space size="h-36" />

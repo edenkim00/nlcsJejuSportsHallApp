@@ -141,12 +141,13 @@ class APIRequestHelper {
     try {
       const response = await fetch(URL, requestOptions);
       const json = await response.json();
+      console.log(json, path);
       if (json?.code != RESPONSE_CODES.SUCCESS) {
         throw new Error(json?.message);
       }
       return json.result ?? true;
     } catch (err) {
-      throw new Error(err);
+      throw err;
     }
   }
 

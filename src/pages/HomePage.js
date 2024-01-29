@@ -5,6 +5,7 @@ import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
 import VoteModal from '../components/VoteModal';
 import Helper from '../helper';
+import {USER_INFO_FILEDS} from '../helper/constants';
 
 export default function HomePage() {
   const today = new Date();
@@ -26,16 +27,14 @@ export default function HomePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     async function checkIsAdmin() {
-      const userInfo = await Helper.getUserInfo();
-      if (!userInfo) {
+      const userId = await Helper.get(USER_INFO_FILEDS.USER_ID);
+      if (!userId) {
         return;
       }
-      if (userInfo?.userId === 1) {
-        setIsAdmin(true);
-      }
+      setIsAdmin(userId === 1);
     }
     checkIsAdmin();
-  }, [isAdmin]);
+  }, []);
 
   return (
     <>

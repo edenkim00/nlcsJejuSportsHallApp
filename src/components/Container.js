@@ -55,7 +55,13 @@ export default function Container({children}) {
         )}
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{flex: 1, width: '100%'}}>
+          style={{
+            flex: 1,
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           {children}
         </KeyboardAvoidingView>
       </ImageBackground>

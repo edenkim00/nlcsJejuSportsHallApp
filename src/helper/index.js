@@ -1,5 +1,7 @@
 import APIManager from '../api';
+import {loginResponse} from '../lib/constants';
 import Storage from '../Storage';
+import {USER_INFO_FILEDS} from './constants';
 export default class Helper {
   static async handleLogout() {
     try {
@@ -12,36 +14,40 @@ export default class Helper {
 
   static async getUserInfo() {
     try {
-      const [userInfo, loginInfo] = await Promise.all([
-        Storage.get('sportshall_userInfo'),
-        Storage.get('sportshall_loginInfo'),
-      ]);
-      if (userInfo && loginInfo) {
-        const userIdFromLoginInfo = JSON.parse(loginInfo)?.userId;
-        const userIdFromUserInfo = JSON.parse(userInfo)?.userId;
-        if (userIdFromLoginInfo === userIdFromUserInfo) {
-          return JSON.parse(userInfo);
-        }
+      const userInfoFromStorage = await Storage.get('sportshall_userInfo');
+      if (userInfoFromStorage) {
+        return JSON.parse(userInfoFromStorage);
       }
-
       const userInfoFromServer = await APIManager.getUserInfo();
+
       if (!userInfoFromServer) {
-        return null;
+        throw new Error('Something went wrong.');
       }
-      const newUserInfo = userInfoFromServer.result;
+      const newUserInfo = userInfoFromServer;
       await Storage.set('sportshall_userInfo', JSON.stringify(newUserInfo));
       return newUserInfo;
     } catch (err) {
       console.log(err);
-      return null;
+      return undefined;
+    }
+  }
+
+  static async getLoginInfo() {
+    try {
+      let loginInfo = loginResponse?.[USER_INFO_FILEDS.USER_ID]
+        ? loginResponse
+        : await Storage.get('sportshall_loginInfo');
+
+      if (loginInfo) {
+        return JSON.parse(loginInfo);
+      }
+      return undefined;
+    } catch (err) {
+      return undefined;
     }
   }
 
   static async get(key) {
-    const user = await Helper.getUserInfo();
-    if (!user?.[key]) {
-      return undefined;
-    }
-    return user[key];
+    return (await Helper.getLoginInfo())?.[key];
   }
 }

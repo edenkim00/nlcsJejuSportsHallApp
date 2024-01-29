@@ -10,6 +10,7 @@ import MypageComponent from './pages/MyPage';
 import Helper from './helper';
 import {USER_INFO_FILEDS} from './helper/constants';
 import APIManager from './api';
+import {Alert} from 'react-native';
 const Tab = createBottomTabNavigator();
 const TABBAR_OPTION = {
   headerShown: false,
@@ -33,19 +34,44 @@ const TABBAR_OPTION = {
 
 function MyTabs({navigation}) {
   const [categories, setCategories] = useState([]);
-  const fetchCategories = async () => {
-    const graduationYear = await Helper.get(USER_INFO_FILEDS.GRADUATION_YEAR);
-    const categories = await APIManager.getVoteCategories(graduationYear);
-
-    setCategories(categories);
-  };
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const handleMoveToLogin = () => {
     navigation.navigate('Login');
   };
+
+  const fetchCategories = async () => {
+    try {
+      const graduationYear = await Helper.get(USER_INFO_FILEDS.GRADUATION_YEAR);
+      console.log(graduationYear);
+      if (!graduationYear) {
+        throw new Error('You cannot access this page now. Please retry later.');
+      }
+      const categories = await APIManager.getVoteCategories(graduationYear);
+      if (!Array.isArray(categories)) {
+        throw new Error('You cannot access this page now. Please retry later.');
+      }
+      console.log('CATEGORIES', categories);
+      setCategories(categories);
+    } catch (err) {
+      Alert.alert('You cannot access this page now. Please retry later.');
+      handleMoveToLogin();
+      return;
+    }
+  };
+  const forbidden = async () => {
+    const userId = await Helper.get(USER_INFO_FILEDS.USER_ID);
+    console.log('INIT: ', userId);
+    if (!userId) {
+      Alert.alert('You cannot access this page now. Please login again.');
+      handleMoveToLogin();
+      return;
+    }
+  };
+
+  useEffect(() => {
+    forbidden();
+    fetchCategories();
+  }, []);
+
   return (
     <NavigationContainer>
       <Tab.Navigator

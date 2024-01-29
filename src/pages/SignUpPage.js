@@ -7,10 +7,11 @@ import Input, {InputWithTailButton} from '../components/Input';
 import Space from '../components/Space';
 import Button from '../components/Button';
 import {useState} from 'react';
-import {mayAlert} from '../lib/utils';
+import {emailAllowed, mayAlert} from '../lib/utils';
 import {EMAIL_REG_EXPR, GENDER_OPTIONS} from '../lib/constants';
 import Dropdown from '../components/Dropdown';
 import {getGraduationYears} from '../lib/utils';
+import {RESPONSE_CODES} from '../api/constants';
 let emailValidationCode = null;
 
 const DROPDOWN_STYLE = {
@@ -86,13 +87,11 @@ export default function SignUpPage({navigation}) {
         gender,
         graduationYear,
       );
-      mayAlert(result);
-      if (result?.code === 1000) {
-        Alert.alert('Successfully signed up!');
-        navigation.navigate('Login');
-      }
+
+      Alert.alert('Successfully Signed Up!');
+      navigation.navigate('Login');
     } catch (err) {
-      Alert.alert('Please retry later.');
+      Alert.alert(err.message?.replace('Error: ', '') ?? 'Please retry later.');
       return;
     }
   };
@@ -102,10 +101,15 @@ export default function SignUpPage({navigation}) {
       Alert.alert('Please type valid email.');
       return;
     }
+    if (!emailAllowed(email)) {
+      Alert.alert('Please type your school email.');
+      return;
+    }
     try {
       const result = await APIManager.requestEmailValidation(email);
-      if (result?.code === 1000 && result?.result?.code) {
-        emailValidationCode = result.result.code;
+      console.log(result);
+      if (result?.code) {
+        emailValidationCode = result.code;
         Alert.alert('Please check your email inbox.');
         setValidating(true);
       } else {

@@ -10,23 +10,24 @@ import Space from '../components/Space';
 import Button from '../components/Button';
 import LoadingComponent from '../components/Loading';
 import {useState} from 'react';
-import {mayAlert} from '../lib/utils';
-import {EMAIL_REG_EXPR} from '../lib/constants';
+import {EMAIL_REG_EXPR, NLCS_DOMAIN} from '../lib/constants';
+import Helper from '../helper';
 
 export default function LoginPage({navigation}) {
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    const loginInfo = async () => {
-      const loginInfoFromStorage = await Storage.get('sportshall_loginInfo');
+    const checkAutoLogin = async () => {
+      const loginInfoFromStorage = await Helper.getLoginInfo();
       setLoading(false);
-      if (loginInfoFromStorage) {
+      console.log('LOGIN INFO FROM STORAGE', loginInfoFromStorage);
+      if (loginInfoFromStorage?.userId) {
         navigation.navigate('BottomTab');
-        return;
       }
-      setLoading(false);
+      return;
     };
     setLoading(true);
-    loginInfo();
+    checkAutoLogin();
   }, []);
 
   const [email, setEmail] = useState('');
@@ -52,17 +53,18 @@ export default function LoginPage({navigation}) {
                 Alert.alert('Please type valid email.');
                 return;
               }
-              const result = await APIManager.login(email, password);
-              if (result.code === 1000) {
+              try {
+                const result = await APIManager.login(email, password);
                 await Storage.set(
                   'sportshall_loginInfo',
-                  JSON.stringify(result.result),
+                  JSON.stringify(result),
                 );
 
                 navigation.navigate('BottomTab');
-                return;
+              } catch (err) {
+                Alert.alert(err.message);
               }
-              mayAlert(result);
+              return;
             }}
             extraClassName={
               'border-2 border-[#00AAAA] shadow-blue-900 shadow-lg mt-8 w-48 bg-transparent h-12 rounded-xl'
@@ -90,7 +92,7 @@ function EmailInput({email, setEmail}) {
       <Button
         label={'+ domain'}
         onPress={() => {
-          setEmail(email + '@pupils.nlcsjeju.kr');
+          setEmail(email + '@' + NLCS_DOMAIN);
         }}
         extraClassName={
           'h-8 rounded-xl absolute border-yellow-200 right-8 -top-2 py-0 px-1 shadow-yellow-100'

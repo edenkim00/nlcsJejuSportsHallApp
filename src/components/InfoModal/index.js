@@ -1,6 +1,23 @@
 import React from 'react';
 import {Modal, View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import Space from '../Space';
+const INSTRUCTIONS = [
+  '1. You can vote for the court you want to play on a half-termly basis.',
+  '2. The breakouts on Friday and Saturday are divided into two sessions.',
+  '3. You can vote for up to 2 sports and your first option will be weighed more than the second vote. If you do not select any of the options, it will be considered a null vote.',
+  '4. You can edit your vote anytime before the deadline.',
+  '5. Voting sports include volleyball, basketball, badminton, and netball.',
+  '6. The deadline for voting is 7 days before the half-term starting date you are voting for. (e.g. the voting for Spring Term 2 closes on the 2nd of February)',
+];
+
+function Instruction({index}) {
+  return (
+    <>
+      <Space size="h-2" />
+      <Text className="text-[14px]">{INSTRUCTIONS[index]}</Text>
+    </>
+  );
+}
 export default function InfoModal({showInfoModal, setShowInfoModal}) {
   return (
     <Modal visible={showInfoModal} transparent animationType="slide">
@@ -12,32 +29,9 @@ export default function InfoModal({showInfoModal, setShowInfoModal}) {
           <Space size="h-1" />
           <ScrollView className="h-3/4">
             <Space size="h-6" />
-            <Space size="h-2" />
-            <Text className="text-[14px]">
-              1. You can vote for the court you want to play on a monthly basis.
-            </Text>
-            <Space size="h-2" />
-            <Text className="text-[14px]">
-              2. The breakouts on Friday and Saturday are divided into two
-              sessions.
-            </Text>
-            <Space size="h-2" />
-            <Text className="text-[14px]">
-              3. You can vote for up to 2 sports and your first option will be
-              weighed more than the second vote. If you do not select any of the
-              options, it will be considered as a null vote.
-            </Text>
-            <Space size="h-2" />
-            <Text className="text-[14px]">
-              4. Voting sports include volleyball, basketball, badminton, and
-              netball.
-            </Text>
-            <Space size="h-2" />
-            <Text className="text-[14px]">
-              5. The deadline for voting is 7 days before the month you are
-              voting for(e.g. voting for October closes on the 23rd of
-              September).
-            </Text>
+            {INSTRUCTIONS.map((_, index) => {
+              return <Instruction key={index} index={index} />;
+            })}
           </ScrollView>
         </View>
         <View className="absolute bottom-2 right-6 h-[10%]">

@@ -1,4 +1,5 @@
 import {Alert} from 'react-native';
+import {NLCS_DOMAIN} from './constants';
 export function getWeekDateList(startDate, endDate) {
   const dateList = [];
   let currentDate = startDate;
@@ -36,4 +37,16 @@ export function mayAlert(response) {
 export function getGraduationYears() {
   const currentYear = new Date().getFullYear();
   return Array.from({length: 15}, (_, i) => String(currentYear + i));
+}
+
+export function emailAllowed(email) {
+  if (!email) {
+    return false;
+  }
+  try {
+    const emailDomain = email.split('@')[1];
+    return emailDomain === NLCS_DOMAIN;
+  } catch (_) {
+    return false;
+  }
 }

@@ -8,7 +8,7 @@ import Input, {InputWithTailButton} from '../components/Input';
 import Space from '../components/Space';
 import Button from '../components/Button';
 import {useState} from 'react';
-import {mayAlert} from '../lib/utils';
+import {emailAllowed, mayAlert} from '../lib/utils';
 import {EMAIL_REG_EXPR} from '../lib/constants';
 let emailValidationCode = null;
 
@@ -49,14 +49,12 @@ export default function PasswordPage({navigation}) {
       return;
     }
     try {
-      const result = await APIManager.changePassword(email, newPassword);
-      mayAlert(result);
-      if (result?.code === 1000) {
-        Alert.alert('Successfully changed password.');
-        navigation.navigate('Login');
-      }
+      await APIManager.changePassword(email, newPassword);
+      Alert.alert('Successfully changed password.');
+      navigation.navigate('Login');
     } catch (err) {
-      Alert.alert('Please retry later.');
+      const message = err?.message ?? 'Please retry later.';
+      Alert.alert(message);
       return;
     }
   };
@@ -66,19 +64,23 @@ export default function PasswordPage({navigation}) {
       Alert.alert('Please type valid email.');
       return;
     }
+    if (!emailAllowed(email)) {
+      Alert.alert('Please type your school email.');
+      return;
+    }
+
     try {
       const result = await APIManager.requestEmailValidation(email, true);
-      if (result?.code === 1000 && result?.result?.code) {
-        emailValidationCode = result.result.code;
+      if (result?.code) {
+        emailValidationCode = result.code;
         Alert.alert('Please check your email inbox.');
         setValidating(true);
-      } else if (result?.code === 3002) {
-        mayAlert(result);
       } else {
-        throw new Error('Failed to validate email.');
+        throw new Error('Please retry later.');
       }
     } catch (err) {
-      Alert.alert('Please retry later.');
+      const message = err?.message ?? 'Please retry later.';
+      Alert.alert(message);
       return;
     }
   };
