@@ -11,6 +11,8 @@ import Helper from './helper';
 import {USER_INFO_FILEDS} from './helper/constants';
 import APIManager from './api';
 import {Alert} from 'react-native';
+import LoadingComponent from './components/Loading';
+import Button from './components/Button';
 const Tab = createBottomTabNavigator();
 const TABBAR_OPTION = {
   headerShown: false,
@@ -33,8 +35,10 @@ const TABBAR_OPTION = {
 };
 
 function MyTabs({navigation}) {
+  const [ready, setReady] = useState(false);
   const [categories, setCategories] = useState([]);
-  const handleMoveToLogin = () => {
+  const handleMoveToLogin = async () => {
+    await Helper.handleLogout();
     navigation.navigate('Login');
   };
 
@@ -49,19 +53,21 @@ function MyTabs({navigation}) {
       if (!Array.isArray(categories)) {
         throw new Error('You cannot access this page now. Please retry later.');
       }
-      console.log('CATEGORIES', categories);
       setCategories(categories);
+      setReady(true);
     } catch (err) {
       Alert.alert('You cannot access this page now. Please retry later.');
       handleMoveToLogin();
       return;
     }
   };
+
   const forbidden = async () => {
     const userId = await Helper.get(USER_INFO_FILEDS.USER_ID);
     console.log('INIT: ', userId);
     if (!userId) {
       Alert.alert('You cannot access this page now. Please login again.');
+
       handleMoveToLogin();
       return;
     }
@@ -88,24 +94,42 @@ function MyTabs({navigation}) {
           tabBarInactiveTintColor: '#999999',
           tabBarActiveTintColor: '#FFFFFF',
         })}>
-        <Tab.Screen
-          name="Home"
-          component={withContainer(HomeComponent)}
-          options={TABBAR_OPTION}
-        />
-        <Tab.Screen
-          name="Result"
-          component={withContainer(ResultComponent)}
-          options={TABBAR_OPTION}
-        />
-        <Tab.Screen
-          name="MyPage"
-          component={withContainer(MypageComponent)}
-          initialParams={{
-            handleMoveToLogin,
-          }}
-          options={TABBAR_OPTION}
-        />
+        {ready ? (
+          <>
+            <Tab.Screen
+              name="Home"
+              component={withContainer(HomeComponent)}
+              initialParams={{
+                categories,
+              }}
+              options={TABBAR_OPTION}
+            />
+            <Tab.Screen
+              name="Result"
+              component={withContainer(ResultComponent)}
+              initialParams={{categories}}
+              options={TABBAR_OPTION}
+            />
+            <Tab.Screen
+              name="MyPage"
+              component={withContainer(MypageComponent)}
+              initialParams={{
+                categories,
+                handleMoveToLogin,
+              }}
+              options={TABBAR_OPTION}
+            />
+          </>
+        ) : (
+          <Tab.Screen
+            name="Loading..."
+            component={withContainer(LoadingView)}
+            initialParams={{
+              handleLogout: handleMoveToLogin,
+            }}
+            options={TABBAR_OPTION}
+          />
+        )}
       </Tab.Navigator>
     </NavigationContainer>
   );
@@ -113,6 +137,29 @@ function MyTabs({navigation}) {
 
 export default MyTabs;
 
+const LoadingView = props => {
+  return (
+    <>
+      <LoadingComponent />
+      <Button
+        label={'Logout'}
+        onPress={async () => {
+          const logout = props?.route?.params?.handleLogout;
+          await Helper.handleLogout();
+          if (logout) {
+            logout();
+          } else {
+            Alert.alert('Logout failed. Please re-boot the app.');
+          }
+        }}
+        extraClassName={
+          'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-40'
+        }
+        fontClassName={'font-normal text-lg font-semibold text-white'}
+      />
+    </>
+  );
+};
 const withContainer = Component => {
   return props => {
     return (
