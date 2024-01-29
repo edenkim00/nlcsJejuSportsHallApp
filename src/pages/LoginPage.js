@@ -20,7 +20,6 @@ export default function LoginPage({navigation}) {
     const checkAutoLogin = async () => {
       const loginInfoFromStorage = await Helper.getLoginInfo();
       setLoading(false);
-      console.log('LOGIN INFO FROM STORAGE', loginInfoFromStorage);
       if (loginInfoFromStorage?.userId) {
         navigation.navigate('BottomTab');
       }

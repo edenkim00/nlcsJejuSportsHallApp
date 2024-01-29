@@ -104,7 +104,6 @@ export default function VoteModal({
               }
               const requestVote = async force => {
                 if (admin) {
-                  console.log(admin);
                   await APIManager.confirm({
                     category_id: selectedVoteCategory,
                     force: force || undefined,

@@ -11,16 +11,13 @@ import {CategorySelector} from '../components/Dropdown';
 export default function ResultPage(props) {
   const initialParams = props?.route?.params;
   if (!initialParams) {
-    console.log('initialParams is undefined');
     return null;
   }
   const {handleMoveToLogin, categories} = initialParams;
   if (!handleMoveToLogin) {
-    console.log('handleMoveToLogin is undefined');
     return null;
   }
   if (!categories?.length) {
-    console.log('categories is undefined');
     return null;
   }
 
@@ -37,7 +34,6 @@ export default function ResultPage(props) {
       const response = await APIManager.getConfirmedResult(
         selectedVoteCategory,
       );
-      console.log(response);
       setVoteResult(response);
       setShowVoteResultModal(true);
     } catch (err) {

@@ -19,23 +19,17 @@ export default function HomePage(props) {
 
   const initialParams = props?.route?.params;
   if (!initialParams) {
-    console.log('initialParams is undefined');
     return null;
   }
 
   const {fetchCategories, handleMoveToLogin, categories} = initialParams;
   if (!fetchCategories) {
-    console.log('fetchCategories is undefined');
     if (handleMoveToLogin) {
       handleMoveToLogin(true);
       return;
     }
     return null;
   }
-
-  useEffect(() => {
-    console.log('categories change', categories);
-  }, [categories]);
 
   useEffect(() => {
     async function checkIsAdmin() {

@@ -18,7 +18,7 @@ export default function Button({
         try {
           await onPress();
         } catch (err) {
-          console.log(err);
+          // Do nothing
         } finally {
           setCalling(false);
         }

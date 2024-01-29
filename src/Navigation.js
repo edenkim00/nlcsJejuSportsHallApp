@@ -48,15 +48,14 @@ function MyTabs({navigation}) {
   const fetchCategories = async () => {
     try {
       const graduationYear = await Helper.get(USER_INFO_FILEDS.GRADUATION_YEAR);
-      console.log(graduationYear);
       if (!graduationYear) {
         throw new Error('You cannot access this page now. Please retry later.');
       }
-      const categories = await APIManager.getVoteCategories(graduationYear);
-      if (!Array.isArray(categories)) {
+      const fetched = await APIManager.getVoteCategories(graduationYear);
+      if (!Array.isArray(fetched)) {
         throw new Error('You cannot access this page now. Please retry later.');
       }
-      setCategories(categories);
+      setCategories(fetched);
       setReady(true);
     } catch (err) {
       handleMoveToLogin(true);
@@ -66,7 +65,6 @@ function MyTabs({navigation}) {
 
   const forbidden = async () => {
     const userId = await Helper.get(USER_INFO_FILEDS.USER_ID);
-    console.log('INIT: ', userId);
     if (!userId) {
       Alert.alert('You cannot access this page now. Please login again.');
       handleMoveToLogin();

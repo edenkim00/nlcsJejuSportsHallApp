@@ -141,7 +141,6 @@ class APIRequestHelper {
     try {
       const response = await fetch(URL, requestOptions);
       const json = await response.json();
-      console.log(json, path);
       if (json?.code != RESPONSE_CODES.SUCCESS) {
         throw new Error(json?.message);
       }
@@ -157,7 +156,6 @@ class APIRequestHelper {
       const query = Object.keys(queryParams)
         .map(key => `${key}=${queryParams[key]}`)
         .join('&');
-      console.log(`${url}?${query}`);
       return `${url}?${query}`;
     }
     return url;

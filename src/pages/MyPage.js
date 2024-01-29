@@ -39,16 +39,13 @@ export default function MyPage(props) {
 
   const initialParams = props?.route?.params;
   if (!initialParams) {
-    console.log('initialParams is undefined');
     return null;
   }
   const {handleMoveToLogin, categories} = initialParams;
   if (!handleMoveToLogin) {
-    console.log('handleMoveToLogin is undefined');
     return null;
   }
   if (!categories?.length) {
-    console.log('categories is undefined');
     return null;
   }
 

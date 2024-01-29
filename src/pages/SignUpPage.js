@@ -107,7 +107,6 @@ export default function SignUpPage({navigation}) {
     }
     try {
       const result = await APIManager.requestEmailValidation(email);
-      console.log(result);
       if (result?.code) {
         emailValidationCode = result.code;
         Alert.alert('Please check your email inbox.');
