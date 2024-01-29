@@ -17,17 +17,14 @@ import {
 } from './constants';
 import Dropdown from '../Dropdown';
 import APIManager from '../../api';
-import Helper from '../../helper';
 import LoadingComponent from '../Loading';
-import {USER_INFO_FILEDS} from '../../helper/constants';
 
 const NONE_LABEL = 'None';
 export default function VoteModal({
   showVoteModal,
   setShowVoteModal,
-  selectedYear,
-  selectedMonth,
-  isAdmin,
+  selectedVoteCategory,
+  admin,
 }) {
   const [voteData, setVoteData] = useState(
     Object.fromEntries(
@@ -35,22 +32,18 @@ export default function VoteModal({
     ),
   );
 
-  const [selectedGrade, setSelectedGrade] = useState();
   const onVoteSelectorChange = (key, value) => {
     setVoteData({...voteData, [key]: value});
   };
 
   function validateVoteData() {
-    if (isAdmin) {
-      if (!selectedGrade) {
-        return false;
-      }
+    if (admin) {
       return !DAYS_AVAILABLE.map(day => {
         return (
           voteData &&
           voteData[day] &&
           voteData[day].length &&
-          [...SPORTS_AVAILABLE].includes(voteData[day][0])
+          [...SPORTS_AVAILABLE].includes(voteData[day])
         );
       }).some(x => !x);
     }
@@ -75,21 +68,8 @@ export default function VoteModal({
           </Text>
           <Space size="h-4" />
 
-          {isAdmin ? (
-            <View className="flex flex-col w-full justify-centers items-center">
-              <View className="flex w-[80%] flex-col">
-                <Text className="mb-1 text-center text-lg font-semibold text-purple-800">
-                  Grade
-                </Text>
-                <Dropdown
-                  options={['MS', 'HS']}
-                  setSelectedOption={setSelectedGrade}
-                  dropdownStyle={DROPDOWN_STYLE}
-                  buttonStyle={DROPDOWN_STYLE}
-                  buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}
-                />
-              </View>
-              <Space size="h-8" />
+          {admin ? (
+            <View className="flex w-full flex-col items-center justify-center">
               <AdminHeader />
             </View>
           ) : (
@@ -100,7 +80,7 @@ export default function VoteModal({
             {DAYS_AVAILABLE.map((day, index) => {
               return (
                 <View key={index}>
-                  {isAdmin ? (
+                  {admin ? (
                     <AdminSelector
                       label={day}
                       onChange={onVoteSelectorChange}
@@ -122,53 +102,38 @@ export default function VoteModal({
                 Alert.alert('Invalid Vote Data', 'Please check your vote data');
                 return;
               }
-              try {
-                const graduationYear = await Header.get(
-                  USER_INFO_FILEDS.GRADUATION_YEAR,
-                );
-                if (!graduationYear) {
-                  throw new Error('User info not found');
+              const requestVote = async force => {
+                if (admin) {
+                  console.log(admin);
+                  await APIManager.confirm({
+                    category_id: selectedVoteCategory,
+                    force: force || undefined,
+                    confirmed_data: voteData,
+                  });
+                  Alert.alert('Success', 'Your confirm has been submitted.');
+                } else {
+                  await APIManager.vote({
+                    category_id: selectedVoteCategory,
+                    force: force || undefined,
+                    vote_data: voteData,
+                  });
+                  Alert.alert('Success', 'Your vote has been submitted.');
                 }
-                const response = await APIManager.vote({
-                  voteData,
-                  year: selectedYear,
-                  month: selectedMonth,
-                  graduationYear: graduationYear,
-                  gradeSelectedByAdmin: selectedGrade,
-                });
-
-                if (response?.code === 1000) {
-                  Alert.alert('Success', 'Your vote has been submitted');
-                } else if (response?.code === 5001) {
+              };
+              try {
+                await requestVote();
+              } catch (err) {
+                err.message = err.message?.replace('Error: ', '');
+                if (err.message === 'You already voted.') {
                   Alert.alert(
-                    'Failed to submit vote',
-                    'You have already voted. Do you want to update your vote?',
+                    'You already voted.',
+                    'Do you want to update your vote?',
                     [
                       {
                         text: 'Yes',
                         onPress: async () => {
                           try {
-                            const newResponse = await APIManager.voteChange({
-                              voteData,
-                              year: selectedYear,
-                              month: selectedMonth,
-                              graduationYear: graduationYear,
-                              gradeSelectedByAdmin: selectedGrade,
-                            });
-
-                            if (newResponse.code === 1000) {
-                              Alert.alert(
-                                'Success',
-                                'Your vote has been updated',
-                              );
-                              return;
-                            } else {
-                              Alert.alert(
-                                'Failed to submit vote',
-                                'Something went wrong. Please try again later.',
-                              );
-                              return;
-                            }
+                            await requestVote(true);
                           } catch (e) {
                             Alert.alert(
                               'Failed to submit vote',
@@ -190,11 +155,6 @@ export default function VoteModal({
                     'Something went wrong. Please try again later.',
                   );
                 }
-              } catch (e) {
-                Alert.alert(
-                  'Failed to submit vote',
-                  'Something went wrong. Please try again later.',
-                );
               }
               setShowVoteModal(false);
             }}>
@@ -336,7 +296,7 @@ function AdminSelector({label, onChange}) {
   const [firstOption, setFirstOption] = useState(NONE_LABEL);
 
   useEffect(() => {
-    onChange(label, [firstOption]);
+    onChange(label, firstOption);
   }, [firstOption]);
 
   return (
@@ -364,8 +324,7 @@ function SportSelector({availableSports, onChange}) {
 }
 
 export function VoteResultModal({
-  selectedYear,
-  selectedMonth,
+  voteName,
   showVoteResultModal,
   setShowVoteResultModal,
   voteResult,
@@ -385,7 +344,7 @@ export function VoteResultModal({
             🗳️ Vote Result
           </Text>
           <Text className="text-center font-bold text-green-600">
-            {selectedYear} - {selectedMonth}
+            {voteName}
           </Text>
           {loading && voteResult !== undefined ? (
             <LoadingComponent />
@@ -404,9 +363,7 @@ export function VoteResultModal({
                         </View>
                         <Space size="w-[5%]" />
                         <View className="w-[60%]">
-                          <Text className="text-center">
-                            {voteResult[day]?.['1']}
-                          </Text>
+                          <Text className="text-center">{voteResult[day]}</Text>
                         </View>
                       </View>
                       <Space size="h-5" />

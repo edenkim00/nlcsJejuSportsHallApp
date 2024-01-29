@@ -13,7 +13,7 @@ export default class APIManager {
     return await APIRequestHelper.request(
       '/app/confirmed-result',
       'GET',
-      true,
+      false,
       undefined,
       {
         category_id,
@@ -157,6 +157,7 @@ class APIRequestHelper {
       const query = Object.keys(queryParams)
         .map(key => `${key}=${queryParams[key]}`)
         .join('&');
+      console.log(`${url}?${query}`);
       return `${url}?${query}`;
     }
     return url;

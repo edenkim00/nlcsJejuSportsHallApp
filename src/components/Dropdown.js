@@ -86,3 +86,58 @@ export default function Dropdown({
     </View>
   );
 }
+
+export function CategorySelector({
+  categories,
+  setSelectedCategory,
+  dark = false,
+  customStyle = {},
+  rowStyle = {},
+}) {
+  return (
+    <View className="flex h-full w-full items-center justify-center">
+      <SelectDropdown
+        data={categories.map(category => category.id)}
+        buttonStyle={getButtonStyle({
+          width: '70%',
+          borderColor: dark ? 'black' : 'white',
+          height: 50,
+          paddingTop: 10,
+          paddingBottom: 12,
+          textAlign: 'center',
+          textAlignVertical: 'center',
+          fontColor: dark ? 'black' : 'white',
+          ...customStyle,
+        })}
+        buttonTextStyle={getButtonLabelStyle({
+          fontSize: 16,
+          color: dark ? 'black' : 'white',
+          textAlign: 'center',
+          fontWeight: '500',
+          ...rowStyle,
+        })}
+        dropdownStyle={getDropdownStyle({
+          width: '60%',
+          marginLeft: '5%',
+          overflow: 'hidden',
+          ...rowStyle,
+        })}
+        onSelect={selectedItem => {
+          setSelectedCategory(selectedItem);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          return (
+            categories?.find(category => category.id === selectedItem)?.name ??
+            ''
+          );
+        }}
+        rowTextForSelection={(item, index) => {
+          return categories
+            .find(category => category.id === item)
+            ?.name?.trim();
+        }}
+        defaultButtonText="▽"
+      />
+    </View>
+  );
+}

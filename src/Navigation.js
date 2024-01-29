@@ -37,7 +37,10 @@ const TABBAR_OPTION = {
 function MyTabs({navigation}) {
   const [ready, setReady] = useState(false);
   const [categories, setCategories] = useState([]);
-  const handleMoveToLogin = async () => {
+  const handleMoveToLogin = async alert => {
+    if (alert) {
+      Alert.alert('You cannot access this page now. Please login again.');
+    }
     await Helper.handleLogout();
     navigation.navigate('Login');
   };
@@ -56,8 +59,7 @@ function MyTabs({navigation}) {
       setCategories(categories);
       setReady(true);
     } catch (err) {
-      Alert.alert('You cannot access this page now. Please retry later.');
-      handleMoveToLogin();
+      handleMoveToLogin(true);
       return;
     }
   };
@@ -67,7 +69,6 @@ function MyTabs({navigation}) {
     console.log('INIT: ', userId);
     if (!userId) {
       Alert.alert('You cannot access this page now. Please login again.');
-
       handleMoveToLogin();
       return;
     }
@@ -100,22 +101,25 @@ function MyTabs({navigation}) {
               name="Home"
               component={withContainer(HomeComponent)}
               initialParams={{
+                handleMoveToLogin,
                 categories,
+                fetchCategories,
               }}
               options={TABBAR_OPTION}
             />
             <Tab.Screen
               name="Result"
               component={withContainer(ResultComponent)}
-              initialParams={{categories}}
+              initialParams={{handleMoveToLogin, categories, fetchCategories}}
               options={TABBAR_OPTION}
             />
             <Tab.Screen
               name="MyPage"
               component={withContainer(MypageComponent)}
               initialParams={{
-                categories,
                 handleMoveToLogin,
+                categories,
+                fetchCategories,
               }}
               options={TABBAR_OPTION}
             />

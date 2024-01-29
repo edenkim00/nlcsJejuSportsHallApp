@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import Space from '../components/Space';
@@ -5,43 +6,45 @@ import MonthPicker from 'react-native-month-year-picker';
 import APIManager from '../api';
 import Helper from '../helper';
 import {VoteResultModal} from '../components/VoteModal';
+import {CategorySelector} from '../components/Dropdown';
 
-export default function ResultPage() {
-  const today = new Date();
-  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
+export default function ResultPage(props) {
+  const initialParams = props?.route?.params;
+  if (!initialParams) {
+    console.log('initialParams is undefined');
+    return null;
+  }
+  const {handleMoveToLogin, categories} = initialParams;
+  if (!handleMoveToLogin) {
+    console.log('handleMoveToLogin is undefined');
+    return null;
+  }
+  if (!categories?.length) {
+    console.log('categories is undefined');
+    return null;
+  }
 
-  const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showVoteResultModal, setShowVoteResultModal] = useState(false);
-
+  const [selectedVoteCategory, setSelectedVoteCategory] = useState(undefined);
   const [voteResult, setVoteResult] = useState(null);
+
   const fetchVoteResult = async () => {
     try {
-      const userInfo = await Helper.getUserInfo();
-      if (!userInfo?.grade) {
-        Alert.alert('Something went wrong. Please try again later.');
+      if (!selectedVoteCategory) {
+        Alert.alert('Please select category');
         return;
       }
-      const response = await APIManager.getVotingResult(
-        userInfo.grade,
-        selectedYear,
-        selectedMonth,
+      const response = await APIManager.getConfirmedResult(
+        selectedVoteCategory,
       );
-      if (response.code !== 1000) {
-        if (response.code === 8003) {
-          Alert.alert(
-            "Admin don't confirm the voting result yet. Please contact to admin.",
-          );
-          return;
-        }
-        Alert.alert('Something went wrong. Please try again later.');
-        return;
-      }
-
-      setVoteResult(response.result);
+      console.log(response);
+      setVoteResult(response);
       setShowVoteResultModal(true);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      err.message?.replace('Error: ', '') ?? 'Please retry later.';
+      Alert.alert(err.message);
+      setShowVoteResultModal(false);
+      return;
     }
   };
 
@@ -50,19 +53,19 @@ export default function ResultPage() {
       <View className="flex h-full w-full flex-col items-center justify-center">
         <Space size="h-48" />
         <Space size="h-[9%]" />
-        <Text className="text-xl font-semibold text-yellow-300">
-          Year and Month
-        </Text>
+
         <Space size="h-4" />
-        <TouchableOpacity
-          className="flex w-3/4 flex-row justify-center border border-white px-8 py-2 shadow-2xl shadow-yellow-100"
-          onPress={() => {
-            setShowMonthPicker(true);
-          }}>
-          <Text className="text-center text-lg font-semibold text-white">
-            {selectedYear}-{selectedMonth} ▽
+        <View className="absolute bottom-[30%] flex w-full justify-center">
+          <Text className="text-center text-lg font-semibold text-yellow-300">
+            Voting Type
           </Text>
-        </TouchableOpacity>
+          <CategorySelector
+            {...{
+              categories,
+              setSelectedCategory: setSelectedVoteCategory,
+            }}
+          />
+        </View>
         <Space size="h-4" />
         <View className="absolute bottom-[15%] left-[20%] flex w-full flex-row">
           <TouchableOpacity
@@ -78,15 +81,12 @@ export default function ResultPage() {
       </View>
       <Modals
         {...{
-          showMonthPicker,
           showVoteResultModal,
-          selectedYear,
-          setSelectedYear,
-          selectedMonth,
-          setSelectedMonth,
-          setShowMonthPicker,
           setShowVoteResultModal,
           voteResult,
+          voteName:
+            categories?.find(category => category.id === selectedVoteCategory)
+              ?.name ?? 'Unknown',
         }}
       />
     </>
@@ -94,53 +94,17 @@ export default function ResultPage() {
 }
 
 function Modals({
-  showMonthPicker,
-  setShowMonthPicker,
   showVoteResultModal,
   setShowVoteResultModal,
-  selectedYear,
-  setSelectedYear,
-  selectedMonth,
-  setSelectedMonth,
   voteResult,
+  voteName,
 }) {
   return (
     <>
-      {showMonthPicker && (
-        <View className="bottom-[8%] z-auto w-full">
-          <MonthPicker
-            onChange={(event, newDate) => {
-              setShowMonthPicker(false);
-              if (event === 'dateSetAction') {
-                if (
-                  newDate &&
-                  newDate?.getFullYear() &&
-                  newDate?.getMonth() !== undefined
-                ) {
-                  if (Date.now() < newDate.getTime()) {
-                    Alert.alert('Not allowed');
-                    setShowMonthPicker(false);
-                    return;
-                  }
-                  setSelectedYear(newDate?.getFullYear());
-                  setSelectedMonth(newDate?.getMonth() + 1);
-                }
-              }
-            }}
-            minimumDate={new Date(2023, 0)}
-            // maximumDate={new Date(year, month)}
-            value={new Date(selectedYear, selectedMonth)}
-            locale="ko"
-            mode="spinner"
-          />
-        </View>
-      )}
-
       {showVoteResultModal && (
         <VoteResultModal
           {...{
-            selectedYear,
-            selectedMonth,
+            voteName,
             showVoteResultModal,
             setShowVoteResultModal,
             voteResult,

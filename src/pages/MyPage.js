@@ -13,7 +13,6 @@ LogBox.ignoreLogs([
 ]);
 
 export default function MyPage(props) {
-  const handleMoveToLogin = props?.route?.params?.handleMoveToLogin;
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
@@ -33,10 +32,25 @@ export default function MyPage(props) {
         setIsAdmin(true);
       }
       setUserInfo(userInfoFromHelper);
-      // setLoading(false);
+      setLoading(false);
     };
     fetchUserInfo();
   }, [handleMoveToLogin]);
+
+  const initialParams = props?.route?.params;
+  if (!initialParams) {
+    console.log('initialParams is undefined');
+    return null;
+  }
+  const {handleMoveToLogin, categories} = initialParams;
+  if (!handleMoveToLogin) {
+    console.log('handleMoveToLogin is undefined');
+    return null;
+  }
+  if (!categories?.length) {
+    console.log('categories is undefined');
+    return null;
+  }
 
   return (
     <>
@@ -93,13 +107,14 @@ export default function MyPage(props) {
                 <Button
                   label={'Delete Account'}
                   onPress={async () => {
-                    props?.route?.params?.handleMoveToLogin();
-                    const res = await APIManager.deleteAccount();
-                    if (!res) {
-                      Alert.alert('Failed to delete account.');
-                    } else {
+                    try {
+                      await APIManager.deleteAccount();
                       await Helper.handleLogout();
+                      props?.route?.params?.handleMoveToLogin();
                       Alert.alert('Successfully deleted account.');
+                    } catch (err) {
+                      Alert.alert(err?.message ?? 'Please retry later.');
+                      return;
                     }
                   }}
                   extraClassName={
@@ -114,13 +129,21 @@ export default function MyPage(props) {
       </View>
       <AdminModal
         visible={showAdminModal}
-        onSubmit={async ({email, year, month}) => {
-          await APIManager.reportVoteResult(email, year, month);
+        onSubmit={async ({email, category_id}) => {
+          try {
+            await APIManager.reportVoteResult(email, category_id);
+            Alert.alert('Successfully requested.');
+          } catch (err) {
+            Alert.alert(err?.message ?? 'Please retry later.');
+            return;
+          }
+
           setShowAdminModal(false);
         }}
         onClose={() => {
           setShowAdminModal(false);
         }}
+        categories={categories}
       />
     </>
   );

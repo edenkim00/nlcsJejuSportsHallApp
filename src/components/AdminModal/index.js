@@ -2,35 +2,50 @@ import React from 'react';
 import {View, Text, TouchableOpacity, Modal, ScrollView} from 'react-native';
 import Input from '../Input';
 import Space from '../Space';
-export default function AdminModal({visible, onClose, onSubmit}) {
+import {CategorySelector} from '../Dropdown';
+export default function AdminModal({visible, onClose, onSubmit, categories}) {
   const [adminEmail, setAdminEmail] = React.useState('');
-  const [reportYear, setReportYear] = React.useState('');
-  const [reportMonth, setReportMonth] = React.useState('');
+  const [reportedCategory, setReportedCategory] = React.useState('');
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex h-full w-full flex-col items-center justify-center bg-[#00000088]">
-        <View className="flex h-fit w-3/4 items-center justify-center rounded-xl bg-gray-100 p-10 shadow-xl shadow-gray-600">
+        <View className="flex h-1/3 w-3/4 items-center justify-center rounded-xl bg-gray-100 p-10 shadow-xl shadow-gray-600">
           <ScrollView className="w-full">
             <InputField
               label="Your Email"
               value={adminEmail}
               setValue={setAdminEmail}
             />
-            <Space size="h-5" />
-            <View className="flex w-full flex-row">
-              <View className="w-[47.5%]">
-                <InputField
-                  label="Year"
-                  value={reportYear}
-                  setValue={setReportYear}
-                />
-              </View>
-              <Space size="w-[5%]" />
-              <View className="w-[47.5%]">
-                <InputField
-                  label="Month"
-                  value={reportMonth}
-                  setValue={setReportMonth}
+            <Space size="h-6" />
+            <View className="w-full justify-center">
+              <View className="absolute top-0 flex w-full flex-col">
+                <Text className="text-center text-base font-bold text-blue-800">
+                  Voting Type
+                </Text>
+                <CategorySelector
+                  {...{
+                    categories,
+                    setSelectedCategory: setReportedCategory,
+                    dark: true,
+                    customStyle: {
+                      height: 40,
+                      width: '100%',
+                      borderColor: '#0000BB',
+                      borderWidth: 2,
+                      paddingTop: 5,
+                      paddingBottom: 5,
+                      paddingLeft: 8,
+                      paddingRight: -8,
+                      textAlign: 'center',
+                      margin: 0,
+                      fontSize: 12,
+                    },
+                    rowStyle: {
+                      marginLeft: 0,
+                      width: '55%',
+                    },
+                  }}
                 />
               </View>
             </View>
@@ -42,8 +57,7 @@ export default function AdminModal({visible, onClose, onSubmit}) {
               onPress={async () => {
                 await onSubmit({
                   email: adminEmail,
-                  year: reportYear,
-                  month: reportMonth,
+                  category_id: reportedCategory,
                 });
               }}>
               <Text className="text-lg font-bold text-[#008844]">Submit</Text>

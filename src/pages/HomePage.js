@@ -1,37 +1,53 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import Space from '../components/Space';
-import MonthPicker from 'react-native-month-year-picker';
 import InfoModal from '../components/InfoModal';
 import VoteModal from '../components/VoteModal';
 import Helper from '../helper';
 import {USER_INFO_FILEDS} from '../helper/constants';
+import {isAdmin} from '../lib/utils';
+import {CategorySelector} from '../components/Dropdown';
 
-export default function HomePage() {
-  const today = new Date();
-  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const defaultDate = new Date(
-    aWeekLater.getFullYear(),
-    aWeekLater.getMonth() + 1,
-  );
-
-  const [selectedYear, setSelectedYear] = useState(defaultDate.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(
-    defaultDate.getMonth() + 1,
-  );
-
-  const [showMonthPicker, setShowMonthPicker] = useState(false);
+export default function HomePage(props) {
+  const [admin, setAdmin] = useState(false);
+  const [selectedVoteCategory, setSelectedVoteCategory] = useState(undefined);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const initialParams = props?.route?.params;
+  if (!initialParams) {
+    console.log('initialParams is undefined');
+    return null;
+  }
+
+  const {fetchCategories, handleMoveToLogin, categories} = initialParams;
+  if (!fetchCategories) {
+    console.log('fetchCategories is undefined');
+    if (handleMoveToLogin) {
+      handleMoveToLogin(true);
+      return;
+    }
+    return null;
+  }
+
+  useEffect(() => {
+    console.log('categories change', categories);
+  }, [categories]);
+
   useEffect(() => {
     async function checkIsAdmin() {
       const userId = await Helper.get(USER_INFO_FILEDS.USER_ID);
       if (!userId) {
-        return;
+        if (handleMoveToLogin) {
+          handleMoveToLogin(true);
+          return;
+        }
+        return null;
       }
-      setIsAdmin(userId === 1);
+      setAdmin(isAdmin(userId));
     }
     checkIsAdmin();
   }, []);
@@ -53,45 +69,46 @@ export default function HomePage() {
           </TouchableOpacity>
         </View>
         <Space size="h-16" />
-        <Text className="text-xl font-semibold text-yellow-300">
-          Year and Month
-        </Text>
         <Space size="h-4" />
-        <TouchableOpacity
-          className="flex w-3/4 flex-row justify-center border border-white px-8 py-2 shadow-2xl shadow-yellow-100"
-          onPress={() => {
-            setShowMonthPicker(true);
-          }}>
-          <Text className="text-center text-lg font-semibold text-white">
-            {selectedYear}-{selectedMonth} ▽
+        <View className="absolute bottom-[30%] flex w-full justify-center">
+          <Text className="text-center text-lg font-semibold text-yellow-300">
+            Voting Type
           </Text>
-        </TouchableOpacity>
+          <CategorySelector
+            {...{
+              categories,
+              setSelectedCategory: setSelectedVoteCategory,
+            }}
+          />
+        </View>
         <Space size="h-4" />
         <View className="absolute bottom-[15%] left-[20%] flex w-full flex-row">
           <TouchableOpacity
             className="w-[60%] justify-center rounded-xl border-2 border-[#00FFFF] px-8 py-2 shadow-lg shadow-blue-100"
             onPress={() => {
+              if (!selectedVoteCategory) {
+                Alert.alert('Please select category');
+                return;
+              }
               setShowVoteModal(true);
             }}>
             <Text className="text-center text-xl font-semibold text-white">
-              Select Sports
+              {admin ? 'Confirm' : 'Select Sports'}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
       <Modals
         {...{
+          categories,
+          showCategoryPicker,
           showInfoModal,
-          showMonthPicker,
-          showVoteModal,
-          selectedYear,
-          setSelectedYear,
-          selectedMonth,
-          setSelectedMonth,
           setShowInfoModal,
-          setShowMonthPicker,
+          showVoteModal,
           setShowVoteModal,
-          isAdmin,
+          selectedVoteCategory,
+          setSelectedVoteCategory,
+          admin,
         }}
       />
     </>
@@ -100,51 +117,14 @@ export default function HomePage() {
 
 function Modals({
   showInfoModal,
+  selectedVoteCategory,
   setShowInfoModal,
-  showMonthPicker,
-  setShowMonthPicker,
   showVoteModal,
   setShowVoteModal,
-  selectedYear,
-  setSelectedYear,
-  selectedMonth,
-  setSelectedMonth,
-  isAdmin,
+  admin,
 }) {
-  const today = new Date();
-  const aWeekLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const year = aWeekLater.getFullYear();
-  const month = aWeekLater.getMonth() + 1;
-
   return (
     <>
-      {showMonthPicker && (
-        <View className="bottom-[8%] z-auto w-full">
-          <MonthPicker
-            onChange={(event, newDate) => {
-              setShowMonthPicker(false);
-              if (event === 'dateSetAction') {
-                if (
-                  newDate &&
-                  newDate?.getFullYear() &&
-                  newDate?.getMonth() !== undefined
-                ) {
-                  setSelectedYear(newDate?.getFullYear());
-                  setSelectedMonth(newDate?.getMonth() + 1);
-                }
-              }
-            }}
-            minimumDate={
-              isAdmin ? new Date(year - 1, month + 1) : new Date(year, month)
-            }
-            maximumDate={new Date(year + 2, 12)}
-            value={new Date(selectedYear, selectedMonth)}
-            open={showMonthPicker}
-            locale="ko"
-            mode="spinner"
-          />
-        </View>
-      )}
       {showInfoModal && (
         <InfoModal
           {...{
@@ -156,11 +136,10 @@ function Modals({
       {showVoteModal && (
         <VoteModal
           {...{
-            selectedYear,
-            selectedMonth,
+            selectedVoteCategory,
             showVoteModal,
             setShowVoteModal,
-            isAdmin,
+            admin,
           }}
         />
       )}
