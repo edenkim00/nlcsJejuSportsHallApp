@@ -19,6 +19,7 @@ import Dropdown from '../Dropdown';
 import APIManager from '../../api';
 import Helper from '../../helper';
 import LoadingComponent from '../Loading';
+import {USER_INFO_FILEDS} from '../../helper/constants';
 
 const NONE_LABEL = 'None';
 export default function VoteModal({
@@ -122,16 +123,17 @@ export default function VoteModal({
                 return;
               }
               try {
-                const userInfo = await Helper.getUserInfo();
-                if (!userInfo?.graduationYear) {
+                const graduationYear = await Header.get(
+                  USER_INFO_FILEDS.GRADUATION_YEAR,
+                );
+                if (!graduationYear) {
                   throw new Error('User info not found');
                 }
-
                 const response = await APIManager.vote({
                   voteData,
                   year: selectedYear,
                   month: selectedMonth,
-                  graduationYear: userInfo?.graduationYear,
+                  graduationYear: graduationYear,
                   gradeSelectedByAdmin: selectedGrade,
                 });
 
@@ -150,7 +152,7 @@ export default function VoteModal({
                               voteData,
                               year: selectedYear,
                               month: selectedMonth,
-                              graduationYear: userInfo?.graduationYear,
+                              graduationYear: graduationYear,
                               gradeSelectedByAdmin: selectedGrade,
                             });
 

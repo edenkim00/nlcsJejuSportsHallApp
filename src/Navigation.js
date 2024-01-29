@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Container from './components/Container';
 import {NavigationContainer} from '@react-navigation/native';
@@ -7,6 +7,9 @@ import Icon from 'react-native-vector-icons/Entypo';
 import HomeComponent from './pages/HomePage';
 import ResultComponent from './pages/Result';
 import MypageComponent from './pages/MyPage';
+import Helper from './helper';
+import {USER_INFO_FILEDS} from './helper/constants';
+import APIManager from './api';
 const Tab = createBottomTabNavigator();
 const TABBAR_OPTION = {
   headerShown: false,
@@ -29,6 +32,17 @@ const TABBAR_OPTION = {
 };
 
 function MyTabs({navigation}) {
+  const [categories, setCategories] = useState([]);
+  const fetchCategories = async () => {
+    const graduationYear = await Helper.get(USER_INFO_FILEDS.GRADUATION_YEAR);
+    const categories = await APIManager.getVoteCategories(graduationYear);
+
+    setCategories(categories);
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleMoveToLogin = () => {
     navigation.navigate('Login');
   };

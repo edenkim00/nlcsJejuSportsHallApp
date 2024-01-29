@@ -36,4 +36,12 @@ export default class Helper {
       return null;
     }
   }
+
+  static async get(key) {
+    const user = await Helper.getUserInfo();
+    if (!user?.[key]) {
+      return undefined;
+    }
+    return user[key];
+  }
 }

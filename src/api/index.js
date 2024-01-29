@@ -1,4 +1,5 @@
 import Storage from '../Storage';
+import {RESPONSE_CODES} from './constants';
 const BASE_URL =
   'https://lspy262udm2a3l3xf6fcxdgzry0yxebi.lambda-url.ap-northeast-2.on.aws';
 
@@ -20,14 +21,14 @@ export default class APIManager {
     );
   }
 
-  static async getVoteCategories(grade) {
+  static async getVoteCategories(graduation_year) {
     return await APIRequestHelper.request(
       '/app/vote-categories',
       'GET',
       true,
       undefined,
       {
-        grade,
+        graduation_year,
       },
     );
   }
@@ -139,11 +140,14 @@ class APIRequestHelper {
 
     try {
       const response = await fetch(URL, requestOptions);
-      return await response.json();
+      const json = await response.json();
+      if (json?.code != RESPONSE_CODES.SUCCESS) {
+        throw new Error(json?.message);
+      }
+      return json.result ?? true;
     } catch (err) {
-      console.log(err);
+      throw new Error(err);
     }
-    return null;
   }
 
   static generateRequestURL(path, queryParams) {
