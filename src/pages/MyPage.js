@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {LogBox, View, Text} from 'react-native';
+import {LogBox, View, Text, Alert} from 'react-native';
 import APIManager from '../api';
 import Space from '../components/Space';
 import Button from '../components/Button';
@@ -74,17 +74,36 @@ export default function MyPage(props) {
               </>
             )}
             {handleMoveToLogin && (
-              <Button
-                label={'Logout'}
-                onPress={async () => {
-                  props?.route?.params?.handleMoveToLogin();
-                  await Helper.handleLogout();
-                }}
-                extraClassName={
-                  'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-36'
-                }
-                fontClassName={'font-normal text-lg font-semibold text-white'}
-              />
+              <>
+                <Button
+                  label={'Logout'}
+                  onPress={async () => {
+                    props?.route?.params?.handleMoveToLogin();
+                    await Helper.handleLogout();
+                  }}
+                  extraClassName={
+                    'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-40'
+                  }
+                  fontClassName={'font-normal text-lg font-semibold text-white'}
+                />
+                <Button
+                  label={'Delete Account'}
+                  onPress={async () => {
+                    props?.route?.params?.handleMoveToLogin();
+                    const res = await APIManager.deleteAccount();
+                    if (!res) {
+                      Alert.alert('Failed to delete account.');
+                    } else {
+                      await Helper.handleLogout();
+                      Alert.alert('Successfully deleted account.');
+                    }
+                  }}
+                  extraClassName={
+                    'border-2 border-[#AAAAAA] shadow-blue-900 shadow-lg w-36 bg-transparent h-12 rounded-xl absolute bottom-24'
+                  }
+                  fontClassName={'font-normal text-xs font-semibold text-white'}
+                />
+              </>
             )}
           </View>
         )}

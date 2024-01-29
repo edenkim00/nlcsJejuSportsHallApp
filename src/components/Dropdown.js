@@ -1,6 +1,8 @@
 import React from 'react';
 import {View} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
+
+const OPTIONAL_DROP_DOWN_VALUE = 'Rather not say';
 const ROW_TEXT_STYLE = {
   textAlign: 'center',
   textAlignVertical: 'center',
@@ -54,15 +56,20 @@ function getButtonLabelStyle(style) {
 
 export default function Dropdown({
   options,
+  optional = false,
   setSelectedOption,
   buttonStyle,
   buttonLabelStyle,
   dropdownStyle,
+  defaultValue = undefined,
 }) {
+  const valuesConsideringOptional = optional
+    ? [OPTIONAL_DROP_DOWN_VALUE, ...options]
+    : options;
   return (
     <View className="w-full">
       <SelectDropdown
-        data={options}
+        data={valuesConsideringOptional}
         defaultButtonText="▽"
         dropdownStyle={getDropdownStyle(dropdownStyle)}
         buttonStyle={getButtonStyle(buttonStyle)}
@@ -74,6 +81,7 @@ export default function Dropdown({
         buttonTextAfterSelection={selectedItem => {
           return selectedItem;
         }}
+        defaultValue={optional ? OPTIONAL_DROP_DOWN_VALUE : undefined}
       />
     </View>
   );

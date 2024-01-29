@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
 import APIManager from '../api';
-import Storage from '../storage';
+import Storage from '../Storage';
 
 import Container from '../components/Container';
 import {View, Alert, Text} from 'react-native';
@@ -11,7 +11,7 @@ import Button from '../components/Button';
 import LoadingComponent from '../components/Loading';
 import {useState} from 'react';
 import {mayAlert} from '../lib/utils';
-import {emailRegExp} from '../lib/constants';
+import {EMAIL_REG_EXPR} from '../lib/constants';
 
 export default function LoginPage({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,7 @@ export default function LoginPage({navigation}) {
                 Alert.alert('Please type email and password.');
                 return;
               }
-              if (emailRegExp.test(email) === false) {
+              if (EMAIL_REG_EXPR.test(email) === false) {
                 Alert.alert('Please type valid email.');
                 return;
               }

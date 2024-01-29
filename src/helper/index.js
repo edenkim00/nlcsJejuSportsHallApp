@@ -1,5 +1,5 @@
 import APIManager from '../api';
-import Storage from '../storage';
+import Storage from '../Storage';
 export default class Helper {
   static async handleLogout() {
     try {

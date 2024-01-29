@@ -8,7 +8,7 @@ import Space from '../components/Space';
 import Button from '../components/Button';
 import {useState} from 'react';
 import {mayAlert} from '../lib/utils';
-import {emailRegExp} from '../lib/constants';
+import {EMAIL_REG_EXPR, GENDER_OPTIONS} from '../lib/constants';
 import Dropdown from '../components/Dropdown';
 import {getGraduationYears} from '../lib/utils';
 let emailValidationCode = null;
@@ -32,7 +32,7 @@ export default function SignUpPage({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [sex, setSex] = useState('');
+  const [gender, setGender] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
   const [validating, setValidating] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
@@ -43,7 +43,8 @@ export default function SignUpPage({navigation}) {
       Alert.alert('Please type email and password.');
       return false;
     }
-    if (emailRegExp.test(email) === false) {
+
+    if (EMAIL_REG_EXPR.test(email) === false) {
       Alert.alert('Please type valid email.');
       return false;
     }
@@ -65,10 +66,7 @@ export default function SignUpPage({navigation}) {
       Alert.alert('Please verify email.');
       return false;
     }
-    if (!sex) {
-      Alert.alert('Please select sex.');
-      return false;
-    }
+
     if (!graduationYear) {
       Alert.alert('Please select graduation year.');
       return false;
@@ -85,7 +83,7 @@ export default function SignUpPage({navigation}) {
         email,
         password,
         name,
-        sex,
+        gender,
         graduationYear,
       );
       mayAlert(result);
@@ -100,7 +98,7 @@ export default function SignUpPage({navigation}) {
   };
 
   const handleRequestEmailValidation = async () => {
-    if (emailRegExp.test(email) === false) {
+    if (EMAIL_REG_EXPR.test(email) === false) {
       Alert.alert('Please type valid email.');
       return;
     }
@@ -198,8 +196,9 @@ export default function SignUpPage({navigation}) {
                   Gender
                 </Text>
                 <Dropdown
-                  options={['male', 'female']}
-                  setSelectedOption={setSex}
+                  optional={true}
+                  options={GENDER_OPTIONS}
+                  setSelectedOption={setGender}
                   dropdownStyle={DROPDOWN_STYLE}
                   buttonStyle={DROPDOWN_STYLE}
                   buttonLabelStyle={DROPDOWN_BUTTON_TEXT_STYLE}
