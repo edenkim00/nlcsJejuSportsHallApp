@@ -10,7 +10,7 @@ import MypageComponent from './pages/MyPage';
 import Helper from './helper';
 import {USER_INFO_FILEDS} from './helper/constants';
 import APIManager from './api';
-import {Alert} from 'react-native';
+import {Alert, View} from 'react-native';
 import LoadingComponent from './components/Loading';
 import Button from './components/Button';
 const Tab = createBottomTabNavigator();
@@ -56,7 +56,7 @@ function MyTabs({navigation}) {
         throw new Error('You cannot access this page now. Please retry later.');
       }
       setCategories(fetched);
-      setReady(true);
+      // setReady(true);
     } catch (err) {
       handleMoveToLogin(true);
       return;
@@ -141,7 +141,7 @@ export default MyTabs;
 
 const LoadingView = props => {
   return (
-    <>
+    <View className="bottom-[10%] flex h-full flex-col">
       <LoadingComponent />
       <Button
         label={'Logout'}
@@ -155,11 +155,11 @@ const LoadingView = props => {
           }
         }}
         extraClassName={
-          'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-40'
+          'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg w-36 bg-transparent h-12 rounded-xl mt-8'
         }
         fontClassName={'font-normal text-lg font-semibold text-white'}
       />
-    </>
+    </View>
   );
 };
 const withContainer = Component => {
