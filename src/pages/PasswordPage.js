@@ -97,7 +97,7 @@ export default function PasswordPage({navigation}) {
 
   return (
     <Container>
-      <View className="absolute bottom-32 flex w-full items-center justify-center">
+      <View className="absolute bottom-[10%] flex w-full items-center justify-center">
         <InputWithTailButton
           mainInputConfig={{
             label: 'Your Email',

@@ -51,14 +51,14 @@ export default function MyPage(props) {
 
   return (
     <>
-      <View className="flex flex-col items-center justify-center">
+      <View className="flex flex-col items-center justify-center h-full">
         {loading ? (
           <>
             <LoadingComponent />
           </>
         ) : (
-          <View className="flex h-full flex-col items-center justify-center">
-            <Space size="h-36" />
+          <View className="bottom-[10%] flex h-full flex-col items-center justify-end">
+            {/* <Space size="h-36" /> */}
             {userInfo && (
               <>
                 <Text className="text-2xl font-bold text-white">
@@ -75,7 +75,6 @@ export default function MyPage(props) {
 
             {isAdmin && (
               <>
-                <Space size="h-18" />
                 <Button
                   label={'🔊 Report'}
                   onPress={() => {
@@ -88,6 +87,7 @@ export default function MyPage(props) {
                 />
               </>
             )}
+            <Space size="h-12" />
             {handleMoveToLogin && (
               <>
                 <Button
@@ -97,7 +97,7 @@ export default function MyPage(props) {
                     await Helper.handleLogout();
                   }}
                   extraClassName={
-                    'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl absolute bottom-40'
+                    'border-2 border-[#BBBBFF] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl'
                   }
                   fontClassName={'font-normal text-lg font-semibold text-white'}
                 />
@@ -115,7 +115,7 @@ export default function MyPage(props) {
                     }
                   }}
                   extraClassName={
-                    'border-2 border-[#AAAAAA] shadow-blue-900 shadow-lg w-36 bg-transparent h-12 rounded-xl absolute bottom-24'
+                    'border-2 border-[#AAAAAA] shadow-blue-900 shadow-lg w-36 bg-transparent h-12 rounded-xl my-3'
                   }
                   fontClassName={'font-normal text-xs font-semibold text-white'}
                 />

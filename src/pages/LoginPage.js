@@ -36,7 +36,7 @@ export default function LoginPage({navigation}) {
       {loading ? (
         <LoadingComponent />
       ) : (
-        <View className="absolute bottom-32 flex w-full items-center justify-center">
+        <View className="absolute bottom-[10%] flex w-full items-center justify-center">
           <EmailInput email={email} setEmail={setEmail} />
           <Space size="h-6" />
           <PasswordInput password={password} setPassword={setPassword} />

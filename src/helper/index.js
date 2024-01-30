@@ -14,15 +14,19 @@ export default class Helper {
 
   static async getUserInfo() {
     try {
-      const userInfoFromStorage = await Storage.get('sportshall_userInfo');
+      const userInfoFromStorage =
+        (await Storage.get('sportshall_loginInfo')) ??
+        (await Storage.get('sportshall_userInfo'));
+
       if (userInfoFromStorage) {
         return JSON.parse(userInfoFromStorage);
       }
-      const userInfoFromServer = await APIManager.getUserInfo();
 
+      const userInfoFromServer = await APIManager.getUserInfo();
       if (!userInfoFromServer) {
         throw new Error('Something went wrong.');
       }
+
       const newUserInfo = userInfoFromServer;
       await Storage.set('sportshall_userInfo', JSON.stringify(newUserInfo));
       return newUserInfo;
