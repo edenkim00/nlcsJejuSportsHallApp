@@ -56,7 +56,7 @@ function MyTabs({navigation}) {
         throw new Error('You cannot access this page now. Please retry later.');
       }
       setCategories(fetched);
-      // setReady(true);
+      setReady(true);
     } catch (err) {
       handleMoveToLogin(true);
       return;
