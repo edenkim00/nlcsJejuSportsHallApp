@@ -49,7 +49,7 @@ export default function HomePage(props) {
   return (
     <>
       <View className="flex h-full w-full flex-col items-center justify-center">
-        <Space size="h-32" />
+        <Space size="h-28" />
         <View className="flex h-[9%] w-full flex-row justify-end">
           <TouchableOpacity
             className="right-[5%] flex flex-row items-center justify-center rounded-xl border border-green-300 px-5 py-4"

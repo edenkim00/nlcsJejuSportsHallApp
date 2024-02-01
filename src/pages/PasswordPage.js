@@ -8,7 +8,6 @@ import Input, {InputWithTailButton} from '../components/Input';
 import Space from '../components/Space';
 import Button from '../components/Button';
 import {useState} from 'react';
-import {emailAllowed, mayAlert} from '../lib/utils';
 import {EMAIL_REG_EXPR} from '../lib/constants';
 let emailValidationCode = null;
 
@@ -62,10 +61,6 @@ export default function PasswordPage({navigation}) {
   const handleRequestEmailValidation = async () => {
     if (EMAIL_REG_EXPR.test(email) === false) {
       Alert.alert('Please type valid email.');
-      return;
-    }
-    if (!emailAllowed(email)) {
-      Alert.alert('Please type your school email.');
       return;
     }
 

@@ -10,7 +10,7 @@ export default function AdminModal({visible, onClose, onSubmit, categories}) {
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex h-full w-full flex-col items-center justify-center bg-[#00000088]">
-        <View className="flex h-1/3 w-3/4 items-center justify-center rounded-xl bg-gray-100 p-10 shadow-xl shadow-gray-600">
+        <View className="flex h-1/2 w-3/4 items-center justify-center rounded-xl bg-gray-100 p-10 shadow-xl shadow-gray-600">
           <ScrollView className="w-full">
             <InputField
               label="Your Email"

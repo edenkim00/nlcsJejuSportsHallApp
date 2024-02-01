@@ -7,7 +7,6 @@ import Input, {InputWithTailButton} from '../components/Input';
 import Space from '../components/Space';
 import Button from '../components/Button';
 import {useState} from 'react';
-import {emailAllowed, mayAlert} from '../lib/utils';
 import {EMAIL_REG_EXPR, GENDER_OPTIONS} from '../lib/constants';
 import Dropdown from '../components/Dropdown';
 import {getGraduationYears} from '../lib/utils';
@@ -80,13 +79,7 @@ export default function SignUpPage({navigation}) {
       return;
     }
     try {
-      const result = await APIManager.signUp(
-        email,
-        password,
-        name,
-        gender,
-        graduationYear,
-      );
+      await APIManager.signUp(email, password, name, gender, graduationYear);
 
       Alert.alert('Successfully Signed Up!');
       navigation.navigate('Login');
@@ -101,10 +94,7 @@ export default function SignUpPage({navigation}) {
       Alert.alert('Please type valid email.');
       return;
     }
-    if (!emailAllowed(email)) {
-      Alert.alert('Please type your school email.');
-      return;
-    }
+
     try {
       const result = await APIManager.requestEmailValidation(email);
       if (result?.code) {
@@ -133,21 +123,23 @@ export default function SignUpPage({navigation}) {
   return (
     <Container>
       <View className="absolute bottom-[10%] flex w-full items-center justify-center">
-        <InputWithTailButton
-          mainInputConfig={{
-            label: 'Email',
-            value: email,
-            setValue: setEmail,
-            extraClassName: 'text-normsdl h-12',
-          }}
-          tailButtonConfig={{
-            label: 'verify',
-            onPress: handleRequestEmailValidation,
-            extraClassName: 'w-16 shadow-none',
-            fontClassName: 'font-normal text-xs text-white',
-            show: !verified,
-          }}
-        />
+        {!verified && (
+          <InputWithTailButton
+            mainInputConfig={{
+              label: 'Email',
+              value: email,
+              setValue: setEmail,
+              extraClassName: 'text-normsdl h-12',
+            }}
+            tailButtonConfig={{
+              label: 'verify',
+              onPress: handleRequestEmailValidation,
+              extraClassName: 'w-16 shadow-none',
+              fontClassName: 'font-normal text-xs text-white',
+              show: !verified,
+            }}
+          />
+        )}
         {validating && (
           <>
             <Space size="h-4" />

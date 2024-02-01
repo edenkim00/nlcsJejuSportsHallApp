@@ -58,7 +58,6 @@ export default function MyPage(props) {
           </>
         ) : (
           <View className="bottom-[10%] flex h-full flex-col items-center justify-end">
-            {/* <Space size="h-36" /> */}
             {userInfo && (
               <>
                 <Text className="text-2xl font-bold text-white">
@@ -72,7 +71,6 @@ export default function MyPage(props) {
                 </Text>
               </>
             )}
-
             {isAdmin && (
               <>
                 <Button
@@ -81,13 +79,12 @@ export default function MyPage(props) {
                     setShowAdminModal(true);
                   }}
                   extraClassName={
-                    'border-2 border-[#00AAAA] shadow-blue-900 shadow-lg mt-8 w-36 bg-transparent h-12 rounded-xl'
+                    'border-2 border-[#00AAAA] shadow-blue-900 shadow-lg mt-4 w-36 bg-transparent h-12 rounded-xl'
                   }
                   fontClassName={'font-normal text-lg font-semibold text-white'}
                 />
               </>
             )}
-            <Space size="h-12" />
             {handleMoveToLogin && (
               <>
                 <Button

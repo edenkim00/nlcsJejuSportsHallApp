@@ -12,6 +12,7 @@ import LoadingComponent from '../components/Loading';
 import {useState} from 'react';
 import {EMAIL_REG_EXPR, NLCS_DOMAIN} from '../lib/constants';
 import Helper from '../helper';
+import {emailAllowed} from '../lib/utils';
 
 export default function LoginPage({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -50,6 +51,10 @@ export default function LoginPage({navigation}) {
               }
               if (EMAIL_REG_EXPR.test(email) === false) {
                 Alert.alert('Please type valid email.');
+                return;
+              }
+              if (!emailAllowed(email)) {
+                Alert.alert('Please type your school email.');
                 return;
               }
               try {
